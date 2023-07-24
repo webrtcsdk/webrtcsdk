@@ -27,13 +27,22 @@ uname -v = #47~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Jun 21 15:35:31 UTC 2
 /usr/bin/oslevel       = unknown
 /bin/universe          = unknown
 
+PATH: /home/lambiengcode/bin/
+PATH: /usr/local/bin/
 PATH: /usr/local/sbin/
 PATH: /usr/local/bin/
 PATH: /usr/sbin/
 PATH: /usr/bin/
 PATH: /sbin/
 PATH: /bin/
+PATH: /usr/games/
+PATH: /usr/local/games/
 PATH: /snap/bin/
+PATH: /snap/bin/
+PATH: /media/lambiengcode/lambiengcode's s/flutter/bin/
+PATH: /home/lambiengcode/Android/Sdk/tools/
+PATH: /home/lambiengcode/Android/Sdk/tools/bin/
+PATH: /home/lambiengcode/Android/Sdk/platform-tools/
 
 
 ## ----------- ##
@@ -238,13 +247,261 @@ configure:3894: result: no
 configure:3994: checking for a BSD-compatible install
 configure:4067: result: /usr/bin/install -c
 configure:4078: checking whether build environment is sane
-configure:4086: error: unsafe absolute working directory name
+configure:4133: result: yes
+configure:4288: checking for a race-free mkdir -p
+configure:4332: result: /usr/bin/mkdir -p
+configure:4339: checking for gawk
+configure:4374: result: no
+configure:4339: checking for mawk
+configure:4360: found /usr/bin/mawk
+configure:4371: result: mawk
+configure:4382: checking whether make sets $(MAKE)
+configure:4405: result: yes
+configure:4427: checking whether make supports the include directive
+configure:4442: make -f confmf.GNU && cat confinc.out
+this is the am__doit target
+configure:4445: $? = 0
+configure:4464: result: yes (GNU style)
+configure:4499: checking whether make supports nested variables
+configure:4517: result: yes
+configure:4593: checking dependency style of gcc
+configure:4705: result: gcc3
+configure:4778: checking whether to enable maintainer-specific portions of Makefiles
+configure:4788: result: yes
+configure:4802: checking for inline
+configure:4819: gcc -c -g -O2  conftest.c >&5
+configure:4819: $? = 0
+configure:4828: result: inline
+configure:4879: checking build system type
+configure:4894: result: x86_64-pc-linux-gnu
+configure:4914: checking host system type
+configure:4928: result: x86_64-pc-linux-gnu
+configure:4969: checking how to print strings
+configure:4996: result: printf
+configure:5017: checking for a sed that does not truncate output
+configure:5087: result: /usr/bin/sed
+configure:5105: checking for grep that handles long lines and -e
+configure:5169: result: /usr/bin/grep
+configure:5174: checking for egrep
+configure:5242: result: /usr/bin/grep -E
+configure:5247: checking for fgrep
+configure:5315: result: /usr/bin/grep -F
+configure:5351: checking for ld used by gcc
+configure:5419: result: /usr/bin/ld
+configure:5426: checking if the linker (/usr/bin/ld) is GNU ld
+configure:5442: result: yes
+configure:5454: checking for BSD- or MS-compatible name lister (nm)
+configure:5509: result: /usr/bin/nm -B
+configure:5649: checking the name lister (/usr/bin/nm -B) interface
+configure:5657: gcc -c -g -O2  conftest.c >&5
+configure:5660: /usr/bin/nm -B "conftest.o"
+configure:5663: output
+0000000000000000 B some_variable
+configure:5670: result: BSD nm
+configure:5673: checking whether ln -s works
+configure:5677: result: yes
+configure:5685: checking the maximum length of command line arguments
+configure:5817: result: 1572864
+configure:5865: checking how to convert x86_64-pc-linux-gnu file names to x86_64-pc-linux-gnu format
+configure:5906: result: func_convert_file_noop
+configure:5913: checking how to convert x86_64-pc-linux-gnu file names to toolchain format
+configure:5934: result: func_convert_file_noop
+configure:5941: checking for /usr/bin/ld option to reload object files
+configure:5949: result: -r
+configure:6028: checking for objdump
+configure:6049: found /usr/bin/objdump
+configure:6060: result: objdump
+configure:6092: checking how to recognize dependent libraries
+configure:6293: result: pass_all
+configure:6383: checking for dlltool
+configure:6418: result: no
+configure:6448: checking how to associate runtime and link libraries
+configure:6476: result: printf %s\n
+configure:6541: checking for ar
+configure:6562: found /usr/bin/ar
+configure:6573: result: ar
+configure:6610: checking for archiver @FILE support
+configure:6628: gcc -c -g -O2  conftest.c >&5
+configure:6628: $? = 0
+configure:6632: ar cr libconftest.a @conftest.lst >&5
+configure:6635: $? = 0
+configure:6640: ar cr libconftest.a @conftest.lst >&5
+ar: conftest.o: No such file or directory
+configure:6643: $? = 1
+configure:6655: result: @
+configure:6718: checking for strip
+configure:6739: found /usr/bin/strip
+configure:6750: result: strip
+configure:6827: checking for ranlib
+configure:6848: found /usr/bin/ranlib
+configure:6859: result: ranlib
+configure:6961: checking command to parse /usr/bin/nm -B output from gcc object
+configure:7115: gcc -c -g -O2  conftest.c >&5
+configure:7118: $? = 0
+configure:7122: /usr/bin/nm -B conftest.o | sed -n -e 's/^.*[	 ]\([ABCDGIRSTW][ABCDGIRSTW]*\)[	 ][	 ]*\([_A-Za-z][_A-Za-z0-9]*\)$/\1 \2 \2/p' | sed '/ __gnu_lto/d' > conftest.nm
+configure:7188: gcc -o conftest -g -O2   conftest.c conftstm.o >&5
+configure:7191: $? = 0
+configure:7229: result: ok
+configure:7276: checking for sysroot
+configure:7307: result: no
+configure:7314: checking for a working dd
+configure:7358: result: /usr/bin/dd
+configure:7362: checking how to truncate binary pipes
+configure:7378: result: /usr/bin/dd bs=4096 count=1
+configure:7515: gcc -c -g -O2  conftest.c >&5
+configure:7518: $? = 0
+configure:7715: checking for mt
+configure:7736: found /usr/bin/mt
+configure:7747: result: mt
+configure:7770: checking if mt is a manifest tool
+configure:7777: mt '-?'
+configure:7785: result: no
+configure:8511: checking for dlfcn.h
+configure:8511: gcc -c -g -O2  conftest.c >&5
+configure:8511: $? = 0
+configure:8511: result: yes
+configure:8770: checking for objdir
+configure:8786: result: .libs
+configure:9050: checking if gcc supports -fno-rtti -fno-exceptions
+configure:9069: gcc -c -g -O2  -fno-rtti -fno-exceptions conftest.c >&5
+cc1: warning: command-line option '-fno-rtti' is valid for C++/D/ObjC++ but not for C
+configure:9073: $? = 0
+configure:9086: result: no
+configure:9450: checking for gcc option to produce PIC
+configure:9458: result: -fPIC -DPIC
+configure:9466: checking if gcc PIC flag -fPIC -DPIC works
+configure:9485: gcc -c -g -O2  -fPIC -DPIC -DPIC conftest.c >&5
+configure:9489: $? = 0
+configure:9502: result: yes
+configure:9531: checking if gcc static flag -static works
+configure:9560: result: yes
+configure:9575: checking if gcc supports -c -o file.o
+configure:9597: gcc -c -g -O2  -o out/conftest2.o conftest.c >&5
+configure:9601: $? = 0
+configure:9623: result: yes
+configure:9631: checking if gcc supports -c -o file.o
+configure:9679: result: yes
+configure:9712: checking whether the gcc linker (/usr/bin/ld -m elf_x86_64) supports shared libraries
+configure:10982: result: yes
+configure:11019: checking whether -lc should be explicitly linked in
+configure:11028: gcc -c -g -O2  conftest.c >&5
+configure:11031: $? = 0
+configure:11046: gcc -shared  -fPIC -DPIC conftest.o  -v -Wl,-soname -Wl,conftest -o conftest 2\>\&1 \| /usr/bin/grep  -lc  \>/dev/null 2\>\&1
+configure:11049: $? = 0
+configure:11063: result: no
+configure:11223: checking dynamic linker characteristics
+configure:11805: gcc -o conftest -g -O2   -Wl,-rpath -Wl,/foo conftest.c  >&5
+configure:11805: $? = 0
+configure:12056: result: GNU/Linux ld.so
+configure:12178: checking how to hardcode library paths into programs
+configure:12203: result: immediate
+configure:12755: checking whether stripping libraries is possible
+configure:12760: result: yes
+configure:12795: checking if libtool supports shared libraries
+configure:12797: result: yes
+configure:12800: checking whether to build shared libraries
+configure:12825: result: yes
+configure:12828: checking whether to build static libraries
+configure:12832: result: yes
+configure:12882: checking whether make supports nested variables
+configure:12900: result: yes
+configure:12928: checking if gcc supports -pedantic flag
+configure:12945: gcc -o conftest -g -O2 -pedantic   conftest.c  >&5
+configure:12945: $? = 0
+configure:12965: result: yes
+configure:12928: checking if gcc supports -Wall flag
+configure:12945: gcc -o conftest -g -O2 -pedantic -Wall   conftest.c  >&5
+configure:12945: $? = 0
+configure:12965: result: yes
+configure:12928: checking if gcc supports -Wextra flag
+configure:12945: gcc -o conftest -g -O2 -pedantic -Wall -Wextra   conftest.c  >&5
+configure:12945: $? = 0
+configure:12965: result: yes
+configure:12928: checking if gcc supports -Wno-sign-compare flag
+configure:12945: gcc -o conftest -g -O2 -pedantic -Wall -Wextra -Wno-sign-compare   conftest.c  >&5
+configure:12945: $? = 0
+configure:12965: result: yes
+configure:12928: checking if gcc supports -Wno-parentheses flag
+configure:12945: gcc -o conftest -g -O2 -pedantic -Wall -Wextra -Wno-sign-compare -Wno-parentheses   conftest.c  >&5
+configure:12945: $? = 0
+configure:12965: result: yes
+configure:12928: checking if gcc supports -Wno-long-long flag
+configure:12945: gcc -o conftest -g -O2 -pedantic -Wall -Wextra -Wno-sign-compare -Wno-parentheses -Wno-long-long   conftest.c  >&5
+configure:12945: $? = 0
+configure:12965: result: yes
+configure:13181: checking for cos in -lm
+configure:13204: gcc -o conftest -g -O2 -pedantic -Wall -Wextra -Wno-sign-compare -Wno-parentheses -Wno-long-long   conftest.c -lm   >&5
+conftest.c:43:6: warning: conflicting types for built-in function 'cos'; expected 'double(double)' [-Wbuiltin-declaration-mismatch]
+   43 | char cos ();
+      |      ^~~
+conftest.c:1:1: note: 'cos' is declared in header '<math.h>'
+    1 | /* confdefs.h */
+configure:13204: $? = 0
+configure:13214: result: yes
+configure:13229: checking for gcc way to treat warnings as errors
+configure:13246: gcc -o conftest -g -O2 -pedantic -Wall -Wextra -Wno-sign-compare -Wno-parentheses -Wno-long-long -Werror   conftest.c  >&5
+configure:13246: $? = 0
+configure:13296: result: -Werror
+configure:13302: checking if gcc supports __attribute__(( visibility("default") ))
+configure:13314: gcc -c -g -O2 -pedantic -Wall -Wextra -Wno-sign-compare -Wno-parentheses -Wno-long-long -Werror  conftest.c >&5
+configure:13314: $? = 0
+configure:13324: result: yes
+configure:13335: checking if gcc supports -fvisibility=hidden
+configure:13354: gcc -o conftest -g -O2 -pedantic -Wall -Wextra -Wno-sign-compare -Wno-parentheses -Wno-long-long -Werror -fvisibility=hidden   conftest.c  >&5
+configure:13354: $? = 0
+configure:13376: result: yes
+configure:13407: checking for doxygen
+configure:13440: result: no
+configure:13450: checking for dot
+configure:13483: result: no
+configure:13612: checking that generated files are newer than configure
+configure:13618: result: done
+configure:13657: creating ./config.status
+
+## ---------------------- ##
+## Running config.status. ##
+## ---------------------- ##
+
+This file was extended by rnnoise config.status unknown, which was
+generated by GNU Autoconf 2.71.  Invocation command line was
+
+  CONFIG_FILES    = 
+  CONFIG_HEADERS  = 
+  CONFIG_LINKS    = 
+  CONFIG_COMMANDS = 
+  $ ./config.status 
+
+on k8smaster.example.net
+
+config.status:1116: creating Makefile
+config.status:1116: creating rnnoise.pc
+config.status:1116: creating rnnoise-uninstalled.pc
+config.status:1116: creating doc/Doxyfile
+config.status:1116: creating config.h
+config.status:1345: executing depfiles commands
+config.status:1422: cd .       && sed -e '/# am--include-marker/d' Makefile         | make -f - am--depfiles
+config.status:1427: $? = 0
+config.status:1345: executing libtool commands
+configure:15802:
+------------------------------------------------------------------------
+  rnnoise unknown: Automatic configuration OK.
+
+    Assertions ................... no
+
+    Hidden visibility ............ yes
+
+    API code examples ............ yes
+    API documentation ............ yes
+------------------------------------------------------------------------
+
 
 ## ---------------- ##
 ## Cache variables. ##
 ## ---------------- ##
 
+ac_cv_build=x86_64-pc-linux-gnu
 ac_cv_c_compiler_gnu=yes
+ac_cv_c_inline=inline
 ac_cv_env_CC_set=
 ac_cv_env_CC_value=
 ac_cv_env_CFLAGS_set=
@@ -263,6 +520,7 @@ ac_cv_env_host_alias_set=
 ac_cv_env_host_alias_value=
 ac_cv_env_target_alias_set=
 ac_cv_env_target_alias_value=
+ac_cv_header_dlfcn_h=yes
 ac_cv_header_inttypes_h=yes
 ac_cv_header_minix_config_h=no
 ac_cv_header_stdint_h=yes
@@ -274,94 +532,152 @@ ac_cv_header_sys_stat_h=yes
 ac_cv_header_sys_types_h=yes
 ac_cv_header_unistd_h=yes
 ac_cv_header_wchar_h=yes
+ac_cv_host=x86_64-pc-linux-gnu
+ac_cv_lib_m_cos=yes
 ac_cv_objext=o
+ac_cv_path_EGREP='/usr/bin/grep -E'
+ac_cv_path_FGREP='/usr/bin/grep -F'
+ac_cv_path_GREP=/usr/bin/grep
+ac_cv_path_SED=/usr/bin/sed
 ac_cv_path_install='/usr/bin/install -c'
+ac_cv_path_lt_DD=/usr/bin/dd
+ac_cv_path_mkdir=/usr/bin/mkdir
+ac_cv_prog_AWK=mawk
+ac_cv_prog_HAVE_DOT=no
+ac_cv_prog_HAVE_DOXYGEN=no
+ac_cv_prog_ac_ct_AR=ar
 ac_cv_prog_ac_ct_CC=gcc
+ac_cv_prog_ac_ct_MANIFEST_TOOL=mt
+ac_cv_prog_ac_ct_OBJDUMP=objdump
+ac_cv_prog_ac_ct_RANLIB=ranlib
+ac_cv_prog_ac_ct_STRIP=strip
 ac_cv_prog_cc_c11=
 ac_cv_prog_cc_g=yes
 ac_cv_prog_cc_stdc=
+ac_cv_prog_make_make_set=yes
 ac_cv_safe_to_define___extensions__=yes
 ac_cv_should_define__xopen_source=no
 ac_cv_sys_file_offset_bits=no
 ac_cv_sys_largefile_CC=no
+am_cv_CC_dependencies_compiler_type=gcc3
+am_cv_make_support_nested_variables=yes
 am_cv_prog_cc_c_o=yes
+cc_cv_attribute_visibility_default=yes
+cc_cv_cflags__Wall=yes
+cc_cv_cflags__Werror=yes
+cc_cv_cflags__Wextra=yes
+cc_cv_cflags__Wno_long_long=yes
+cc_cv_cflags__Wno_parentheses=yes
+cc_cv_cflags__Wno_sign_compare=yes
+cc_cv_cflags__fvisibility_hidden=yes
+cc_cv_cflags__pedantic=yes
+cc_cv_flag_visibility=yes
+cc_cv_werror=-Werror
+lt_cv_ar_at_file=@
+lt_cv_archive_cmds_need_lc=no
+lt_cv_deplibs_check_method=pass_all
+lt_cv_file_magic_cmd='$MAGIC_CMD'
+lt_cv_file_magic_test_file=
+lt_cv_ld_reload_flag=-r
+lt_cv_nm_interface='BSD nm'
+lt_cv_objdir=.libs
+lt_cv_path_LD=/usr/bin/ld
+lt_cv_path_NM='/usr/bin/nm -B'
+lt_cv_path_mainfest_tool=no
+lt_cv_prog_compiler_c_o=yes
+lt_cv_prog_compiler_pic='-fPIC -DPIC'
+lt_cv_prog_compiler_pic_works=yes
+lt_cv_prog_compiler_rtti_exceptions=no
+lt_cv_prog_compiler_static_works=yes
+lt_cv_prog_gnu_ld=yes
+lt_cv_sharedlib_from_linklib_cmd='printf %s\n'
+lt_cv_shlibpath_overrides_runpath=yes
+lt_cv_sys_global_symbol_pipe='sed -n -e '\''s/^.*[	 ]\([ABCDGIRSTW][ABCDGIRSTW]*\)[	 ][	 ]*\([_A-Za-z][_A-Za-z0-9]*\)$/\1 \2 \2/p'\'' | sed '\''/ __gnu_lto/d'\'''
+lt_cv_sys_global_symbol_to_c_name_address='sed -n -e '\''s/^: \(.*\) .*$/  {"\1", (void *) 0},/p'\'' -e '\''s/^[ABCDGIRSTW][ABCDGIRSTW]* .* \(.*\)$/  {"\1", (void *) \&\1},/p'\'''
+lt_cv_sys_global_symbol_to_c_name_address_lib_prefix='sed -n -e '\''s/^: \(.*\) .*$/  {"\1", (void *) 0},/p'\'' -e '\''s/^[ABCDGIRSTW][ABCDGIRSTW]* .* \(lib.*\)$/  {"\1", (void *) \&\1},/p'\'' -e '\''s/^[ABCDGIRSTW][ABCDGIRSTW]* .* \(.*\)$/  {"lib\1", (void *) \&\1},/p'\'''
+lt_cv_sys_global_symbol_to_cdecl='sed -n -e '\''s/^T .* \(.*\)$/extern int \1();/p'\'' -e '\''s/^[ABCDGIRSTW][ABCDGIRSTW]* .* \(.*\)$/extern char \1;/p'\'''
+lt_cv_sys_global_symbol_to_import=
+lt_cv_sys_max_cmd_len=1572864
+lt_cv_to_host_file_cmd=func_convert_file_noop
+lt_cv_to_tool_file_cmd=func_convert_file_noop
+lt_cv_truncate_bin='/usr/bin/dd bs=4096 count=1'
 
 ## ----------------- ##
 ## Output variables. ##
 ## ----------------- ##
 
-ACLOCAL=''
-AMDEPBACKSLASH=''
-AMDEP_FALSE=''
+ACLOCAL='${SHELL} '\''/home/lambiengcode/Documents/rnnoise/missing'\'' aclocal-1.16'
+AMDEPBACKSLASH='\'
+AMDEP_FALSE='#'
 AMDEP_TRUE=''
-AMTAR=''
-AM_BACKSLASH=''
-AM_DEFAULT_V=''
-AM_DEFAULT_VERBOSITY=''
-AM_V=''
-AR=''
-AUTOCONF=''
-AUTOHEADER=''
-AUTOMAKE=''
-AWK=''
+AMTAR='$${TAR-tar}'
+AM_BACKSLASH='\'
+AM_DEFAULT_V='$(AM_DEFAULT_VERBOSITY)'
+AM_DEFAULT_VERBOSITY='0'
+AM_V='$(V)'
+AR='ar'
+AUTOCONF='${SHELL} '\''/home/lambiengcode/Documents/rnnoise/missing'\'' autoconf'
+AUTOHEADER='${SHELL} '\''/home/lambiengcode/Documents/rnnoise/missing'\'' autoheader'
+AUTOMAKE='${SHELL} '\''/home/lambiengcode/Documents/rnnoise/missing'\'' automake-1.16'
+AWK='mawk'
 CC='gcc'
-CCDEPMODE=''
-CFLAGS='-g -O2'
+CCDEPMODE='depmode=gcc3'
+CFLAGS='-g -O2 -pedantic -Wall -Wextra -Wno-sign-compare -Wno-parentheses -Wno-long-long -fvisibility=hidden'
 CPPFLAGS=''
-CSCOPE=''
-CTAGS=''
-CYGPATH_W=''
-DEFS=''
-DEPDIR=''
-DLLTOOL=''
+CSCOPE='cscope'
+CTAGS='ctags'
+CYGPATH_W='echo'
+DEFS='-DHAVE_CONFIG_H'
+DEPDIR='.deps'
+DLLTOOL='false'
 DSYMUTIL=''
 DUMPBIN=''
 ECHO_C=''
 ECHO_N='-n'
 ECHO_T=''
-EGREP=''
-ETAGS=''
+EGREP='/usr/bin/grep -E'
+ETAGS='etags'
 EXEEXT=''
-FGREP=''
-GREP=''
-HAVE_DOT=''
-HAVE_DOXYGEN=''
+FGREP='/usr/bin/grep -F'
+GREP='/usr/bin/grep'
+HAVE_DOT='no'
+HAVE_DOXYGEN='no'
 HAVE_DOXYGEN_FALSE=''
-HAVE_DOXYGEN_TRUE=''
+HAVE_DOXYGEN_TRUE='#'
 INSTALL_DATA='${INSTALL} -m 644'
 INSTALL_PROGRAM='${INSTALL}'
 INSTALL_SCRIPT='${INSTALL}'
-INSTALL_STRIP_PROGRAM=''
-LD=''
+INSTALL_STRIP_PROGRAM='$(install_sh) -c -s'
+LD='/usr/bin/ld -m elf_x86_64'
 LDFLAGS=''
-LIBM=''
+LIBM='-lm'
 LIBOBJS=''
 LIBS=''
-LIBTOOL=''
+LIBTOOL='$(SHELL) $(top_builddir)/libtool'
 LIPO=''
-LN_S=''
+LN_S='ln -s'
 LTLIBOBJS=''
 LT_SYS_LIBRARY_PATH=''
 MAINT=''
-MAINTAINER_MODE_FALSE=''
+MAINTAINER_MODE_FALSE='#'
 MAINTAINER_MODE_TRUE=''
-MAKEINFO=''
-MANIFEST_TOOL=''
-MKDIR_P=''
-NM=''
+MAKEINFO='${SHELL} '\''/home/lambiengcode/Documents/rnnoise/missing'\'' makeinfo'
+MANIFEST_TOOL=':'
+MKDIR_P='/usr/bin/mkdir -p'
+NM='/usr/bin/nm -B'
 NMEDIT=''
-OBJDUMP=''
+OBJDUMP='objdump'
 OBJEXT='o'
-OP_ENABLE_EXAMPLES_FALSE=''
+OP_ENABLE_EXAMPLES_FALSE='#'
 OP_ENABLE_EXAMPLES_TRUE=''
-OP_LT_AGE=''
-OP_LT_CURRENT=''
-OP_LT_REVISION=''
+OP_LT_AGE='4'
+OP_LT_CURRENT='4'
+OP_LT_REVISION='1'
 OP_WIN32_FALSE=''
-OP_WIN32_TRUE=''
+OP_WIN32_TRUE='#'
 OTOOL64=''
 OTOOL=''
-PACKAGE=''
+PACKAGE='rnnoise'
 PACKAGE_BUGREPORT='jmvalin@jmvalin.ca'
 PACKAGE_NAME='rnnoise'
 PACKAGE_STRING='rnnoise unknown'
@@ -369,56 +685,56 @@ PACKAGE_TARNAME='rnnoise'
 PACKAGE_URL=''
 PACKAGE_VERSION='unknown'
 PATH_SEPARATOR=':'
-RANLIB=''
-SED=''
+RANLIB='ranlib'
+SED='/usr/bin/sed'
 SET_MAKE=''
 SHELL='/bin/bash'
-STRIP=''
-VERSION=''
-ac_ct_AR=''
+STRIP='strip'
+VERSION='unknown'
+ac_ct_AR='ar'
 ac_ct_CC='gcc'
 ac_ct_DUMPBIN=''
 am__EXEEXT_FALSE=''
-am__EXEEXT_TRUE=''
-am__fastdepCC_FALSE=''
+am__EXEEXT_TRUE='#'
+am__fastdepCC_FALSE='#'
 am__fastdepCC_TRUE=''
-am__include=''
+am__include='include'
 am__isrc=''
-am__leading_dot=''
-am__nodep=''
+am__leading_dot='.'
+am__nodep='_no'
 am__quote=''
-am__tar=''
-am__untar=''
+am__tar='$${TAR-tar} chof - "$$tardir"'
+am__untar='$${TAR-tar} xf -'
 bindir='${exec_prefix}/bin'
-build=''
+build='x86_64-pc-linux-gnu'
 build_alias=''
-build_cpu=''
-build_os=''
-build_vendor=''
+build_cpu='x86_64'
+build_os='linux-gnu'
+build_vendor='pc'
 datadir='${datarootdir}'
 datarootdir='${prefix}/share'
 docdir='${datarootdir}/doc/${PACKAGE_TARNAME}'
 dvidir='${docdir}'
-exec_prefix='NONE'
-host=''
+exec_prefix='${prefix}'
+host='x86_64-pc-linux-gnu'
 host_alias=''
-host_cpu=''
-host_os=''
-host_vendor=''
+host_cpu='x86_64'
+host_os='linux-gnu'
+host_vendor='pc'
 htmldir='${docdir}'
 includedir='${prefix}/include'
 infodir='${datarootdir}/info'
-install_sh=''
+install_sh='${SHELL} /home/lambiengcode/Documents/rnnoise/install-sh'
 libdir='${exec_prefix}/lib'
 libexecdir='${exec_prefix}/libexec'
 localedir='${datarootdir}/locale'
 localstatedir='${prefix}/var'
 lrintf_lib=''
 mandir='${datarootdir}/man'
-mkdir_p=''
+mkdir_p='$(MKDIR_P)'
 oldincludedir='/usr/include'
 pdfdir='${docdir}'
-prefix='NONE'
+prefix='/usr/local'
 program_transform_name='s,x,x,'
 psdir='${docdir}'
 runstatedir='${localstatedir}/run'
@@ -465,5 +781,10 @@ target_alias=''
 #define __STDC_WANT_MATH_SPEC_FUNCS__ 1
 #define _TANDEM_SOURCE 1
 #define __EXTENSIONS__ 1
+#define HAVE_DLFCN_H 1
+#define LT_OBJDIR ".libs/"
+#define RNNOISE_BUILD /**/
+#define SUPPORT_ATTRIBUTE_VISIBILITY_DEFAULT 1
+#define SUPPORT_FLAG_VISIBILITY 1
 
-configure: exit 1
+configure: exit 0
