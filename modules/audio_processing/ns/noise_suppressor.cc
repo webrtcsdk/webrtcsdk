@@ -18,6 +18,9 @@
 
 #include "modules/audio_processing/ns/fast_math.h"
 #include "rtc_base/checks.h"
+#include "rnnoise/include/rnnoise.h"
+
+#define FRAME_SIZE 480
 
 namespace webrtc {
 
@@ -381,6 +384,35 @@ void NoiseSuppressor::Analyze(const AudioBuffer& audio) {
 }
 
 void NoiseSuppressor::Process(AudioBuffer* audio) {
+  // Create RNNoise state
+  DenoiseState *st;
+  st = rnnoise_create(NULL);
+
+  // Process each frame in the audio buffer
+  for (size_t frame = 0; frame < audio->num_frames(); ++frame) {
+    // Process each channel in the frame
+    for (size_t ch = 0; ch < num_channels_; ++ch) {
+      // Create a temporary buffer to hold the current frame
+      float x[FRAME_SIZE];
+
+      // Copy the current frame to the input buffer for RNNoise
+      for (size_t i = 0; i < FRAME_SIZE; ++i) {
+        x[i] = audio->split_bands(ch)[0][frame * FRAME_SIZE + i];
+      }
+
+      // Process the frame with RNNoise
+      rnnoise_process_frame(st, x, x);
+
+      // Copy the denoised frame back to the audio buffer
+      for (size_t i = 0; i < FRAME_SIZE; ++i) {
+        audio->split_bands(ch)[0][frame * FRAME_SIZE + i] = x[i];
+      }
+    }
+  }
+
+  // Clean up RNNoise state
+  rnnoise_destroy(st);
+  
   // Select the space for storing data during the processing.
   std::array<FilterBankState, kMaxNumChannelsOnStack> filter_bank_states_stack;
   rtc::ArrayView<FilterBankState> filter_bank_states(
