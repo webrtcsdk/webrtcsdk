@@ -20,8 +20,8 @@
 #include "rtc_base/checks.h"
 #include "rnnoise/include/rnnoise.h"
 
-#define FRAME_SIZE 360
-#define SLIDING_WINDOW_SIZE 120
+#define FRAME_SIZE 480
+#define SLIDING_WINDOW_SIZE 20
 
 namespace webrtc {
 
@@ -400,7 +400,7 @@ void NoiseSuppressor::Process(AudioBuffer* audio) {
     // Process each sliding window
     for (size_t window_start = 0; window_start < num_frames * FRAME_SIZE;
          window_start += SLIDING_WINDOW_SIZE) {
-      size_t window_end = std::min(window_start + FRAME_SIZE, num_frames * FRAME_SIZE);
+      // size_t window_end = std::min(window_start + FRAME_SIZE, num_frames * FRAME_SIZE);
       size_t frame_idx = window_start / FRAME_SIZE;
 
       // Copy the current frame to the input buffer for RNNoise
