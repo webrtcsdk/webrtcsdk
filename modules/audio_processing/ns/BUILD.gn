@@ -40,7 +40,6 @@ rtc_static_library("ns") {
     "suppression_params.h",
     "wiener_filter.cc",
     "wiener_filter.h",
-    // Thêm các tệp mã nguồn của rnnoise vào đây
     "rnnoise/src/celt_lpc.c",
     "rnnoise/src/denoise.c",
     "rnnoise/src/kiss_fft.c",
