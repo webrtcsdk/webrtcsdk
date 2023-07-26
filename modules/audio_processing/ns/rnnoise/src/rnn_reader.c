@@ -34,7 +34,7 @@
 
 #include "rnn.h"
 #include "rnn_data.h"
-#include "rnnoise.h"
+// #include "rnnoise.h"
 
 /* Although these values are the same as in rnn.h, we make them separate to
  * avoid accidentally burning internal values into a file format */
