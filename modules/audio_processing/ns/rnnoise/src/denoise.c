@@ -162,7 +162,7 @@ void interp_band_gain(float* g, const float* bandE) {
 
 CommonState common;
 
-static void check_init() {
+static void check_init(void) {
   int i;
   if (common.init)
     return;
@@ -198,7 +198,7 @@ static void dct(float* out, const float* in) {
 #if 0
 static void idct(float *out, const float *in) {
   int i;
-  check_init();
+  check_init(void);
   for (i=0;i<NB_BANDS;i++) {
     int j;
     float sum = 0;

@@ -99,7 +99,7 @@ void rnnoise_compute_dense(const DenseLayer* layer,
     for (i = 0; i < N; i++)
       output[i] = relu(output[i]);
   } else {
-    *(int*)0 = 0;
+    return;
   }
 }
 
@@ -147,7 +147,7 @@ void rnnoise_compute_gru(const GRULayer* gru,
     else if (gru->activation == ACTIVATION_RELU)
       sum = relu(WEIGHTS_SCALE * sum);
     else
-      *(int*)0 = 0;
+      return;
     h[i] = z[i] * state[i] + (1 - z[i]) * sum;
   }
   for (i = 0; i < N; i++)
