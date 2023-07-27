@@ -254,11 +254,11 @@ static void apply_window(float* x) {
   }
 }
 
-int rnnoise_get_size() {
+int rnnoise_get_size(void) {
   return sizeof(DenoiseState);
 }
 
-int rnnoise_get_frame_size() {
+int rnnoise_get_frame_size(void) {
   return FRAME_SIZE;
 }
 
