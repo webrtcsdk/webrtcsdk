@@ -18,27 +18,27 @@ package org.webrtc;
 
 public class FrameCryptorFactory {
   public static FrameCryptorKeyProvider createFrameCryptorKeyProvider(
-      boolean sharedKey, byte[] ratchetSalt, int ratchetWindowSize, byte[] uncryptedMagicBytes) {
-    return nativeCreateFrameCryptorKeyProvider(sharedKey, ratchetSalt, ratchetWindowSize, uncryptedMagicBytes);
+      boolean sharedKey, byte[] ratchetSalt, int ratchetWindowSize, byte[] uncryptedMagicBytes, int failureTolerance) {
+    return nativeCreateFrameCryptorKeyProvider(sharedKey, ratchetSalt, ratchetWindowSize, uncryptedMagicBytes, failureTolerance);
   }
 
-  public static FrameCryptor createFrameCryptorForRtpSender(RtpSender rtpSender,
+  public static FrameCryptor createFrameCryptorForRtpSender(PeerConnectionFactory factory, RtpSender rtpSender,
       String participantId, FrameCryptorAlgorithm algorithm, FrameCryptorKeyProvider keyProvider) {
-    return nativeCreateFrameCryptorForRtpSender(rtpSender.getNativeRtpSender(), participantId,
+    return nativeCreateFrameCryptorForRtpSender(factory.getNativeOwnedFactoryAndThreads(),rtpSender.getNativeRtpSender(), participantId,
         algorithm.ordinal(), keyProvider.getNativeKeyProvider());
   }
 
-  public static FrameCryptor createFrameCryptorForRtpReceiver(RtpReceiver rtpReceiver,
+  public static FrameCryptor createFrameCryptorForRtpReceiver(PeerConnectionFactory factory, RtpReceiver rtpReceiver,
       String participantId, FrameCryptorAlgorithm algorithm, FrameCryptorKeyProvider keyProvider) {
-    return nativeCreateFrameCryptorForRtpReceiver(rtpReceiver.getNativeRtpReceiver(), participantId,
+    return nativeCreateFrameCryptorForRtpReceiver(factory.getNativeOwnedFactoryAndThreads(), rtpReceiver.getNativeRtpReceiver(), participantId,
         algorithm.ordinal(), keyProvider.getNativeKeyProvider());
   }
 
-  private static native FrameCryptor nativeCreateFrameCryptorForRtpSender(
+  private static native FrameCryptor nativeCreateFrameCryptorForRtpSender(long factory,
       long rtpSender, String participantId, int algorithm, long nativeFrameCryptorKeyProvider);
-  private static native FrameCryptor nativeCreateFrameCryptorForRtpReceiver(
+  private static native FrameCryptor nativeCreateFrameCryptorForRtpReceiver(long factory,
       long rtpReceiver, String participantId, int algorithm, long nativeFrameCryptorKeyProvider);
 
   private static native FrameCryptorKeyProvider nativeCreateFrameCryptorKeyProvider(
-      boolean sharedKey, byte[] ratchetSalt, int ratchetWindowSize, byte[] uncryptedMagicBytes);
+      boolean sharedKey, byte[] ratchetSalt, int ratchetWindowSize, byte[] uncryptedMagicBytes, int failureTolerance);
 }
