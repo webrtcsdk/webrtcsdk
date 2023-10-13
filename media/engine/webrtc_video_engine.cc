@@ -3478,18 +3478,9 @@ void WebRtcVideoReceiveChannel::WebRtcVideoReceiveStream::SetReceiverParameters(
   }
 }
 
-void WebRtcVideoChannel::WebRtcVideoReceiveStream::StartStream() {
-  if (stream_) {
-    stream_->Start();
-  }
-}
-void WebRtcVideoChannel::WebRtcVideoReceiveStream::StopStream() {
-  if (stream_) {
-    stream_->Stop();
-  }
-}
-
-void WebRtcVideoChannel::WebRtcVideoReceiveStream::RecreateReceiveStream() {
+void WebRtcVideoReceiveChannel::WebRtcVideoReceiveStream::
+    RecreateReceiveStream() {
+  RTC_DCHECK_RUN_ON(&thread_checker_);
   RTC_DCHECK(stream_);
   absl::optional<int> base_minimum_playout_delay_ms;
   absl::optional<webrtc::VideoReceiveStreamInterface::RecordingState>
