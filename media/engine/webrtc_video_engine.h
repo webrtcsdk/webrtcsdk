@@ -295,8 +295,8 @@ class WebRtcVideoSendChannel : public MediaChannelUtil,
     return send_codec()->rtx_time;
   }
 
-  virtual void StartReceive(uint32_t ssrc) override;
-  virtual void StopReceive(uint32_t ssrc) override;
+  virtual void StartReceive(uint32_t ssrc) {}
+  virtual void StopReceive(uint32_t ssrc) {}
 
  private:
   struct ChangedSenderParameters {
