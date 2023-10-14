@@ -114,6 +114,12 @@ deps = {
 
   'src/third_party/clang-format/script':
     'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/clang/tools/clang-format.git@e5337933f2951cacd3aeacd238ce4578163ca0b9',
+  'src/third_party/libc++/src':
+    'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxx.git@84fb809dd6dae36d556dc0bb702c6cc2ce9d4b80',
+  'src/third_party/libc++abi/src':
+    'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxxabi.git@3d83ca7bd2ab81f042bafe6996da08c9cd57c119',
+  'src/third_party/libunwind/src':
+    'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libunwind.git@76e621a89787516da745489245d8b65a48ad60d8',
   'src/buildtools/third_party/libc++/trunk':
     'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxx.git@bff81b702ff4b7f74b1c0ed02a4bcf6c2744a90b',
   'src/buildtools/third_party/libc++abi/trunk':
