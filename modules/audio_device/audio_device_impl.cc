@@ -193,13 +193,70 @@ int32_t AudioDeviceModuleImpl::CreatePlatformSpecificObjects() {
   }
 #endif  // defined(WEBRTC_WINDOWS_CORE_AUDIO_BUILD)
 
+#if defined(WEBRTC_ANDROID)
+  // Create an Android audio manager.
+  audio_manager_android_.reset(new AudioManager());
+  // Select best possible combination of audio layers.
+  if (audio_layer == kPlatformDefaultAudio) {
+    if (audio_manager_android_->IsAAudioSupported()) {
+      // Use of AAudio for both playout and recording has highest priority.
+      audio_layer = kAndroidAAudioAudio;
+    } else if (audio_manager_android_->IsLowLatencyPlayoutSupported() &&
+               audio_manager_android_->IsLowLatencyRecordSupported()) {
+      // Use OpenSL ES for both playout and recording.
+      audio_layer = kAndroidOpenSLESAudio;
+    } else if (audio_manager_android_->IsLowLatencyPlayoutSupported() &&
+               !audio_manager_android_->IsLowLatencyRecordSupported()) {
+      // Use OpenSL ES for output on devices that only supports the
+      // low-latency output audio path.
+      audio_layer = kAndroidJavaInputAndOpenSLESOutputAudio;
+    } else {
+      // Use Java-based audio in both directions when low-latency output is
+      // not supported.
+      audio_layer = kAndroidJavaAudio;
+    }
+  }
+  AudioManager* audio_manager = audio_manager_android_.get();
+  if (audio_layer == kAndroidJavaAudio) {
+    // Java audio for both input and output audio.
+    audio_device_.reset(new AudioDeviceTemplate<AudioRecordJni, AudioTrackJni>(
+        audio_layer, audio_manager));
+  } else if (audio_layer == kAndroidOpenSLESAudio) {
+    // OpenSL ES based audio for both input and output audio.
+    audio_device_.reset(
+        new AudioDeviceTemplate<OpenSLESRecorder, OpenSLESPlayer>(
+            audio_layer, audio_manager));
+  } else if (audio_layer == kAndroidJavaInputAndOpenSLESOutputAudio) {
+    // Java audio for input and OpenSL ES for output audio (i.e. mixed APIs).
+    // This combination provides low-latency output audio and at the same
+    // time support for HW AEC using the AudioRecord Java API.
+    audio_device_.reset(new AudioDeviceTemplate<AudioRecordJni, OpenSLESPlayer>(
+        audio_layer, audio_manager));
+  } else if (audio_layer == kAndroidAAudioAudio) {
+#if defined(WEBRTC_AUDIO_DEVICE_INCLUDE_ANDROID_AAUDIO)
+    // AAudio based audio for both input and output.
+    audio_device_.reset(new AudioDeviceTemplate<AAudioRecorder, AAudioPlayer>(
+        audio_layer, audio_manager));
+#endif
+  } else if (audio_layer == kAndroidJavaInputAndAAudioOutputAudio) {
+#if defined(WEBRTC_AUDIO_DEVICE_INCLUDE_ANDROID_AAUDIO)
+    // Java audio for input and AAudio for output audio (i.e. mixed APIs).
+    audio_device_.reset(new AudioDeviceTemplate<AudioRecordJni, AAudioPlayer>(
+        audio_layer, audio_manager));
+#endif
+  } else {
+    RTC_LOG(LS_ERROR) << "The requested audio layer is not supported";
+    audio_device_.reset(nullptr);
+  }
+// END #if defined(WEBRTC_ANDROID)
+
 // Linux ADM implementation.
 // Note that, WEBRTC_ENABLE_LINUX_ALSA is always defined by default when
 // WEBRTC_LINUX is defined. WEBRTC_ENABLE_LINUX_PULSE depends on the
 // 'rtc_include_pulse_audio' build flag.
 // TODO(bugs.webrtc.org/9127): improve support and make it more clear that
 // PulseAudio is the default selection.
-#if !defined(WEBRTC_ANDROID) && defined(WEBRTC_LINUX)
+#elif defined(WEBRTC_LINUX)
 #if !defined(WEBRTC_ENABLE_LINUX_PULSE)
   // Build flag 'rtc_include_pulse_audio' is set to false. In this mode:
   // - kPlatformDefaultAudio => ALSA, and
