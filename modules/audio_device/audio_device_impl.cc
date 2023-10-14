@@ -160,10 +160,6 @@ int32_t AudioDeviceModuleImpl::CheckPlatform() {
 
 int32_t AudioDeviceModuleImpl::CreatePlatformSpecificObjects() {
   RTC_LOG(LS_INFO) << __FUNCTION__;
-  if (audio_device_ != nullptr) {
-    RTC_LOG(LS_INFO) << "Reusing provided audio device";
-    return 0;
-  }
 // Dummy ADM implementations if build flags are set.
 #if defined(WEBRTC_DUMMY_AUDIO_BUILD)
   audio_device_.reset(new AudioDeviceDummy());
