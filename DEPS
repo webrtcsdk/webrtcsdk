@@ -120,6 +120,12 @@ deps = {
     'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxxabi.git@e8e4eb8f1c413ea4365256b2b83a6093c95d2d86',
   'src/third_party/libunwind/src':
     'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libunwind.git@43e5a34c5b7066a7ee15c74f09dc37b4b9b5630e',
+  'src/buildtools/third_party/libc++/trunk':
+    'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxx.git@bff81b702ff4b7f74b1c0ed02a4bcf6c2744a90b',
+  'src/buildtools/third_party/libc++abi/trunk':
+    'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxxabi.git@307bd163607c315d46103ebe1d68aab44bf93986',
+  'src/buildtools/third_party/libunwind/trunk':
+    'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libunwind.git@2795322d57001de8125cfdf18cef804acff69e35',
 
   'src/third_party/ninja': {
     'packages': [
