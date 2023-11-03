@@ -19,14 +19,14 @@ SuppressionParams::SuppressionParams(
   switch (suppression_level) {
     case NsConfig::SuppressionLevel::k6dB:
       over_subtraction_factor = 1.f;
-      // 6 dB attenuation.
-      minimum_attenuating_gain = 0.5f;
-      use_attenuation_adjustment = false;
+      // 15 dB attenuation.
+      minimum_attenuating_gain = 0.18f;
+      use_attenuation_adjustment = true;
       break;
     case NsConfig::SuppressionLevel::k12dB:
       over_subtraction_factor = 1.f;
-      // 12 dB attenuation.
-      minimum_attenuating_gain = 0.25f;
+      // 15 dB attenuation.
+      minimum_attenuating_gain = 0.18f;
       use_attenuation_adjustment = true;
       break;
     case NsConfig::SuppressionLevel::k18dB:

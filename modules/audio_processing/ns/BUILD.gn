@@ -40,6 +40,14 @@ rtc_static_library("ns") {
     "suppression_params.h",
     "wiener_filter.cc",
     "wiener_filter.h",
+    "rnnoise/include/rnnoise.h",
+    "rnnoise/src/celt_lpc.c",
+    "rnnoise/src/denoise.c",
+    "rnnoise/src/kiss_fft.c",
+    "rnnoise/src/pitch.c",
+    "rnnoise/src/rnn_data.c",
+    "rnnoise/src/rnn_reader.c",
+    "rnnoise/src/rnn.c",
   ]
 
   defines = []
