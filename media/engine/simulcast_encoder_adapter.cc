@@ -36,6 +36,7 @@
 #include "rtc_base/checks.h"
 #include "rtc_base/experiments/rate_control_settings.h"
 #include "rtc_base/logging.h"
+#include "system_wrappers/include/field_trial.h"
 
 namespace {
 
@@ -285,7 +286,7 @@ SimulcastEncoderAdapter::SimulcastEncoderAdapter(
       bypass_mode_(false),
       encoded_complete_callback_(nullptr),
       experimental_boosted_screenshare_qp_(
-          GetScreenshareBoostedQpValue(field_trials)),
+          GetScreenshareBoostedQpValue()),
       boost_base_layer_quality_(
           RateControlSettings::ParseFromKeyValueConfig(&field_trials)
               .Vp8BoostBaseLayerQuality()),
