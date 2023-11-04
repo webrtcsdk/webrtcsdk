@@ -42,10 +42,9 @@ namespace {
 // Max qp for lowest spatial resolution when doing simulcast.
 const unsigned int kLowestResMaxQp = 45;
 
-absl::optional<unsigned int> GetScreenshareBoostedQpValue(
-    const webrtc::FieldTrialsView& field_trials) {
+absl::optional<unsigned int> GetScreenshareBoostedQpValue() {
   std::string experiment_group =
-      field_trials.Lookup("WebRTC-BoostedScreenshareQp");
+      webrtc::field_trial::FindFullName("WebRTC-BoostedScreenshareQp");
   unsigned int qp;
   if (sscanf(experiment_group.c_str(), "%u", &qp) != 1)
     return absl::nullopt;
