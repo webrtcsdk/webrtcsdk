@@ -250,30 +250,12 @@ SimulcastEncoderAdapter::SimulcastEncoderAdapter(VideoEncoderFactory* factory,
                               format,
                               FieldTrialBasedConfig()) {}
 
-SimulcastEncoderAdapter::SimulcastEncoderAdapter(VideoEncoderFactory* primary_factory,
-                                                 const SdpVideoFormat& format,
-                                                 const FieldTrialsView& field_trials)
-    : VideoEncoder(primary_factory),
-      primary_encoder_factory_(primary_factory),
-      fallback_encoder_factory_(nullptr),
-      video_format_(format),
-      encoded_complete_callback_(nullptr),
-      total_streams_count_(0),
-      bypass_mode_(false),
-      inited_(0),
-      experimental_boosted_screenshare_qp_(
-          GetScreenshareBoostedQpValue(field_trials)),
-      boost_base_layer_quality_(
-          RateControlSettings::ParseFromKeyValueConfig(&field_trials)
-              .Vp8BoostBaseLayerQuality()),
-      prefer_temporal_support_on_base_layer_(field_trials.IsEnabled(
-          "WebRTC-Video-PreferTemporalSupportOnBaseLayer")) {
-  RTC_DCHECK(primary_factory);
+SimulcastEncoderAdapter::SimulcastEncoderAdapter(
+    VideoEncoderFactory* primary_factory,
+    const SdpVideoFormat& format,
+    const FieldTrialsView& field_trials)
+    : SimulcastEncoderAdapter(primary_factory, nullptr, format, field_trials) {}
 
-  // The adapter is typically created on the worker thread, but operated on
-  // the encoder task queue.
-  encoder_queue_.Detach();
-}
 
 SimulcastEncoderAdapter::SimulcastEncoderAdapter(
     VideoEncoderFactory* primary_factory,
