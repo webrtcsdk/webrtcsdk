@@ -77,7 +77,6 @@
 #include "rtc_base/time_utils.h"
 #include "rtc_base/trace_event.h"
 #include "system_wrappers/include/metrics.h"
-#include "system_wrappers/include/field_trial.h"
 
 #if WEBRTC_ENABLE_PROTOBUF
 RTC_PUSH_IGNORING_WUNDEF()
@@ -454,13 +453,6 @@ void WebRtcVoiceEngine::Init() {
     options.audio_jitter_buffer_max_packets = 200;
     options.audio_jitter_buffer_fast_accelerate = false;
     options.audio_jitter_buffer_min_delay_ms = 0;
-    // Overrided for low latency mode
-    if (webrtc::field_trial::IsEnabled("OWT-LowLatencyMode")) {
-      options.echo_cancellation = false;
-      options.auto_gain_control = false;
-      options.noise_suppression = false;
-      options.highpass_filter = false;
-    }
     ApplyOptions(options);
   }
   initialized_ = true;
@@ -668,8 +660,7 @@ WebRtcVoiceEngine::GetRtpHeaderExtensions() const {
   for (const auto& uri : {webrtc::RtpExtension::kAudioLevelUri,
                           webrtc::RtpExtension::kAbsSendTimeUri,
                           webrtc::RtpExtension::kTransportSequenceNumberUri,
-        webrtc::RtpExtension::kRepairedRidUri,
-        webrtc::RtpExtension::kPictureIdUri}) {
+                          webrtc::RtpExtension::kMidUri}) {
     result.emplace_back(uri, id++, webrtc::RtpTransceiverDirection::kSendRecv);
   }
   for (const auto& uri : {webrtc::RtpExtension::kAbsoluteCaptureTimeUri}) {
