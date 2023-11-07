@@ -36,9 +36,6 @@ std::unique_ptr<VideoRtpDepacketizer> CreateVideoRtpDepacketizer(
       return std::make_unique<VideoRtpDepacketizerH265>();
     case kVideoCodecAV1:
       return std::make_unique<VideoRtpDepacketizerAv1>();
-    case kVideoCodecH265:
-      // TODO(bugs.webrtc.org/13485): Implement VideoRtpDepacketizerH265.
-      return nullptr;
     case kVideoCodecGeneric:
     case kVideoCodecMultiplex:
       return std::make_unique<VideoRtpDepacketizerGeneric>();
