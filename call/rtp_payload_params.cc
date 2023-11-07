@@ -360,9 +360,6 @@ void RtpPayloadParams::SetGeneric(const CodecSpecificInfo* codec_specific_info,
       return;
     case VideoCodecType::kVideoCodecMultiplex:
       return;
-    case VideoCodecType::kVideoCodecH265:
-      // TODO(bugs.webrtc.org/13485): Implement H265 to generic descriptor.
-      return;
   }
   RTC_DCHECK_NOTREACHED() << "Unsupported codec.";
 }

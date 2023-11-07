@@ -45,7 +45,6 @@
 #include "rtc_base/experiments/field_trial_parser.h"
 #include "rtc_base/experiments/rate_control_settings.h"
 #include "rtc_base/logging.h"
-#include "system_wrappers/include/field_trial.h"
 
 namespace webrtc {
 
@@ -65,33 +64,6 @@ constexpr float kDefaultPaceMultiplier = 2.5f;
 // However, if we actually are overusing, we want to drop to something slightly
 // below the current throughput estimate to drain the network queues.
 constexpr double kProbeDropThroughputFraction = 0.85;
-}
-
-bool GetExternalBweRateLimits(int* start_bitrate_kbps,
-                              int* min_bitrate_kbps,
-                              int* max_bitrate_kbps) {
-  std::string expr_str = webrtc::field_trial::FindFullName("OWT-BweRateLimits");
-  if (expr_str.empty())
-    return false;
-  int parsed_values =
-#if defined(WEBRTC_WIN)
-      sscanf_s(expr_str.c_str(), "Enabled-%u,%u,%u", start_bitrate_kbps,
-               min_bitrate_kbps, max_bitrate_kbps);
-#else
-      sscanf(expr_str.c_str(), "Enabled-%u,%u,%u", start_bitrate_kbps,
-             min_bitrate_kbps, max_bitrate_kbps);
-#endif
-  if (parsed_values == 3) {
-    RTC_CHECK_GE(*start_bitrate_kbps, 0)
-        << "start_bitrate_kbps must not be smaller than 0.";
-    RTC_CHECK_GE(*min_bitrate_kbps, 0)
-        << " min_bitrate_kbps must not be smaller than 0.";
-    RTC_CHECK_GE(*max_bitrate_kbps, 0)
-        << "max_bitrate_kbps must not be smaller than 0";
-    return true;
-  }
-  return false;
-}
 
 bool IsEnabled(const FieldTrialsView* config, absl::string_view key) {
   return absl::StartsWith(config->Lookup(key), "Enabled");
@@ -187,21 +159,6 @@ GoogCcNetworkController::GoogCcNetworkController(NetworkControllerConfig config,
       key_value_config_->Lookup("WebRTC-Bwe-SafeResetOnRouteChange"));
   if (delay_based_bwe_)
     delay_based_bwe_->SetMinBitrate(kCongestionControllerMinBitrate);
-  ParseFieldTrial({&external_start_bitrate_kbps_, &external_min_bitrate_kbps_,
-                   &external_max_bitrate_kbps_},
-                  field_trial::FindFullName("OWT-Bwe-RateLimits"));
-  RTC_CHECK_GE(external_start_bitrate_kbps_.Get(), 0)
-      << "start_bitrate_kbps must not be smaller than 0.";
-  RTC_CHECK_GE(external_min_bitrate_kbps_.Get(), 0)
-      << " min_bitrate_kbps must not be smaller than 0.";
-  RTC_CHECK_GE(external_max_bitrate_kbps_.Get(), 0)
-      << "max_bitrate_kbps must not be smaller than 0";
-  if (external_start_bitrate_kbps_.Get() > 0)
-    delay_based_bwe_->SetStartBitrate(
-        webrtc::DataRate::BitsPerSec(external_start_bitrate_kbps_ * 1024));
-  if (external_min_bitrate_kbps_.Get() > 0)
-    delay_based_bwe_->SetMinBitrate(
-        webrtc::DataRate::BitsPerSec(external_min_bitrate_kbps_ * 1024));
 }
 
 GoogCcNetworkController::~GoogCcNetworkController() {}
@@ -378,8 +335,7 @@ NetworkControlUpdate GoogCcNetworkController::OnStreamsConfig(
 
     if (use_min_allocatable_as_lower_bound_) {
       ClampConstraints();
-      if (delay_based_bwe_)
-        delay_based_bwe_->SetMinBitrate(min_data_rate_);
+      delay_based_bwe_->SetMinBitrate(min_data_rate_);
       bandwidth_estimation_->SetMinMaxBitrate(min_data_rate_, max_data_rate_);
     }
   }
@@ -471,8 +427,7 @@ void GoogCcNetworkController::UpdateCongestionWindowSize() {
 }
 
 NetworkControlUpdate GoogCcNetworkController::OnTransportPacketsFeedback(
-    TransportPacketsFeedback report,
-    int64_t current_offset_ms) {
+    TransportPacketsFeedback report) {
   if (report.packet_feedbacks.empty()) {
     // TODO(bugs.webrtc.org/10125): Design a better mechanism to safe-guard
     // against building very large network queues.
@@ -668,9 +623,8 @@ NetworkControlUpdate GoogCcNetworkController::GetNetworkState(
       last_estimated_fraction_loss_.value_or(0) / 255.0;
   update.target_rate->network_estimate.round_trip_time =
       last_estimated_round_trip_time_;
-  if (delay_based_bwe_)
-    update.target_rate->network_estimate.bwe_period =
-        delay_based_bwe_->GetExpectedBwePeriod();
+  update.target_rate->network_estimate.bwe_period =
+      delay_based_bwe_->GetExpectedBwePeriod();
 
   update.target_rate->at_time = at_time;
   update.target_rate->target_rate = last_pushback_target_rate_;
