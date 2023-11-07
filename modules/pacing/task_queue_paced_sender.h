@@ -144,6 +144,8 @@ class TaskQueuePacedSender : public RtpPacketPacer, public RtpPacketSender {
   void UpdateStats() RTC_RUN_ON(task_queue_);
   Stats GetStats() const;
 
+  bool IsLowLatencyMode() const;
+
   Clock* const clock_;
   struct BurstyPacerFlags {
     // Parses `kBurstyPacerFieldTrial`. Example:
@@ -185,6 +187,8 @@ class TaskQueuePacedSender : public RtpPacketPacer, public RtpPacketSender {
   Stats current_stats_ RTC_GUARDED_BY(task_queue_);
   // Protects against ProcessPackets reentry from packet sent receipts.
   bool processing_packets_ RTC_GUARDED_BY(task_queue_) = false;
+
+  const bool low_latency_mode_;
 
   ScopedTaskSafety safety_;
   TaskQueueBase* task_queue_;

@@ -20,6 +20,7 @@
 #include "rtc_base/experiments/field_trial_parser.h"
 #include "rtc_base/experiments/field_trial_units.h"
 #include "rtc_base/trace_event.h"
+#include "system_wrappers/include/field_trial.h"
 
 namespace webrtc {
 
@@ -66,6 +67,9 @@ TaskQueuePacedSender::TaskQueuePacedSender(
   }
   if (burst.has_value()) {
     pacing_controller_.SetSendBurstInterval(burst.value());
+  }
+  if (low_latency_mode_) {
+    pacing_controller_.SetProbingEnabled(false);
   }
 }
 
@@ -304,6 +308,10 @@ void TaskQueuePacedSender::UpdateStats() {
 TaskQueuePacedSender::Stats TaskQueuePacedSender::GetStats() const {
   RTC_DCHECK_RUN_ON(task_queue_);
   return current_stats_;
+}
+
+bool TaskQueuePacedSender::IsLowLatencyMode() const {
+  return low_latency_mode_;
 }
 
 }  // namespace webrtc

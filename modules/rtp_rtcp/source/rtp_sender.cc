@@ -22,6 +22,7 @@
 #include "api/rtc_event_log/rtc_event_log.h"
 #include "logging/rtc_event_log/events/rtc_event_rtp_packet_outgoing.h"
 #include "modules/rtp_rtcp/include/rtp_cvo.h"
+#include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
 #include "modules/rtp_rtcp/source/byte_io.h"
 #include "modules/rtp_rtcp/source/rtp_generic_frame_descriptor_extension.h"
 #include "modules/rtp_rtcp/source/rtp_header_extensions.h"
@@ -94,6 +95,7 @@ constexpr RtpExtensionSize kAudioExtensionSizes[] = {
     CreateExtensionSize<TransmissionOffset>(),
     CreateExtensionSize<TransportSequenceNumber>(),
     CreateMaxExtensionSize<RtpMid>(),
+	CreateExtensionSize<PictureId>(),
 };
 
 // Non-volatile extensions can be expected on all packets, if registered.
@@ -111,8 +113,14 @@ bool IsNonVolatile(RTPExtensionType type) {
     case kRtpExtensionRtpStreamId:
     case kRtpExtensionRepairedRtpStreamId:
     case kRtpExtensionMid:
+<<<<<<< HEAD
     case kRtpExtensionGenericFrameDescriptor:
     case kRtpExtensionDependencyDescriptor:
+=======
+    case kRtpExtensionGenericFrameDescriptor00:
+    case kRtpExtensionGenericFrameDescriptor02:
+    case kRtpExtensionPictureId:
+>>>>>>> 108-sdk
       return true;
     case kRtpExtensionInbandComfortNoise:
     case kRtpExtensionAbsoluteCaptureTime:

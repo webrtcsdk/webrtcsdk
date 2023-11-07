@@ -37,57 +37,74 @@ int GetDownSamplingBlockSizeLog2(int down_sampling_factor) {
 MatchedFilterLagAggregator::MatchedFilterLagAggregator(
     ApmDataDumper* data_dumper,
     size_t max_filter_lag,
-    const EchoCanceller3Config::Delay& delay_config)
+    const EchoCanceller3Config::Delay::DelaySelectionThresholds& thresholds)
     : data_dumper_(data_dumper),
-      thresholds_(delay_config.delay_selection_thresholds),
-      headroom_(static_cast<int>(delay_config.delay_headroom_samples /
-                                 delay_config.down_sampling_factor)),
-      highest_peak_aggregator_(max_filter_lag) {
-  if (delay_config.detect_pre_echo) {
-    pre_echo_lag_aggregator_ = std::make_unique<PreEchoLagAggregator>(
-        max_filter_lag, delay_config.down_sampling_factor);
-  }
+      histogram_(max_filter_lag + 1, 0),
+      thresholds_(thresholds) {
   RTC_DCHECK(data_dumper);
   RTC_DCHECK_LE(thresholds_.initial, thresholds_.converged);
+  histogram_data_.fill(0);
 }
 
 MatchedFilterLagAggregator::~MatchedFilterLagAggregator() = default;
 
 void MatchedFilterLagAggregator::Reset(bool hard_reset) {
-  highest_peak_aggregator_.Reset();
-  if (pre_echo_lag_aggregator_ != nullptr) {
-    pre_echo_lag_aggregator_->Reset();
-  }
+  std::fill(histogram_.begin(), histogram_.end(), 0);
+  histogram_data_.fill(0);
+  histogram_data_index_ = 0;
   if (hard_reset) {
     significant_candidate_found_ = false;
   }
 }
 
 absl::optional<DelayEstimate> MatchedFilterLagAggregator::Aggregate(
-    const absl::optional<const MatchedFilter::LagEstimate>& lag_estimate) {
-  if (lag_estimate && pre_echo_lag_aggregator_) {
-    pre_echo_lag_aggregator_->Dump(data_dumper_);
-    pre_echo_lag_aggregator_->Aggregate(
-        std::max(0, static_cast<int>(lag_estimate->pre_echo_lag) - headroom_));
+    rtc::ArrayView<const MatchedFilter::LagEstimate> lag_estimates) {
+  // Choose the strongest lag estimate as the best one.
+  float best_accuracy = 0.f;
+  int best_lag_estimate_index = -1;
+  for (size_t k = 0; k < lag_estimates.size(); ++k) {
+    if (lag_estimates[k].updated && lag_estimates[k].reliable) {
+      if (lag_estimates[k].accuracy > best_accuracy) {
+        best_accuracy = lag_estimates[k].accuracy;
+        best_lag_estimate_index = static_cast<int>(k);
+      }
+    }
   }
 
-  if (lag_estimate) {
-    highest_peak_aggregator_.Aggregate(
-        std::max(0, static_cast<int>(lag_estimate->lag) - headroom_));
-    rtc::ArrayView<const int> histogram = highest_peak_aggregator_.histogram();
-    int candidate = highest_peak_aggregator_.candidate();
-    significant_candidate_found_ = significant_candidate_found_ ||
-                                   histogram[candidate] > thresholds_.converged;
-    if (histogram[candidate] > thresholds_.converged ||
-        (histogram[candidate] > thresholds_.initial &&
+  // TODO(peah): Remove this logging once all development is done.
+  data_dumper_->DumpRaw("aec3_echo_path_delay_estimator_best_index",
+                        best_lag_estimate_index);
+  data_dumper_->DumpRaw("aec3_echo_path_delay_estimator_histogram", histogram_);
+
+  if (best_lag_estimate_index != -1) {
+    RTC_DCHECK_GT(histogram_.size(), histogram_data_[histogram_data_index_]);
+    RTC_DCHECK_LE(0, histogram_data_[histogram_data_index_]);
+    --histogram_[histogram_data_[histogram_data_index_]];
+
+    histogram_data_[histogram_data_index_] =
+        lag_estimates[best_lag_estimate_index].lag;
+
+    RTC_DCHECK_GT(histogram_.size(), histogram_data_[histogram_data_index_]);
+    RTC_DCHECK_LE(0, histogram_data_[histogram_data_index_]);
+    ++histogram_[histogram_data_[histogram_data_index_]];
+
+    histogram_data_index_ =
+        (histogram_data_index_ + 1) % histogram_data_.size();
+
+    const int candidate =
+        std::distance(histogram_.begin(),
+                      std::max_element(histogram_.begin(), histogram_.end()));
+
+    significant_candidate_found_ =
+        significant_candidate_found_ ||
+        histogram_[candidate] > thresholds_.converged;
+    if (histogram_[candidate] > thresholds_.converged ||
+        (histogram_[candidate] > thresholds_.initial &&
          !significant_candidate_found_)) {
       DelayEstimate::Quality quality = significant_candidate_found_
                                            ? DelayEstimate::Quality::kRefined
                                            : DelayEstimate::Quality::kCoarse;
-      int reported_delay = pre_echo_lag_aggregator_ != nullptr
-                               ? pre_echo_lag_aggregator_->pre_echo_candidate()
-                               : candidate;
-      return DelayEstimate(quality, reported_delay);
+      return DelayEstimate(quality, candidate);
     }
   }
 

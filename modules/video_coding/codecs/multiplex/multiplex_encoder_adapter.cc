@@ -94,7 +94,8 @@ int MultiplexEncoderAdapter::InitEncode(
       video_codec.H264()->keyFrameInterval = 0;
       break;
     case kVideoCodecH265:
-      // TODO(bugs.webrtc.org/13485)
+      key_frame_interval_ = video_codec.H265()->keyFrameInterval;
+      video_codec.H265()->keyFrameInterval = 0;
       break;
     default:
       break;

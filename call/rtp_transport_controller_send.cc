@@ -30,6 +30,7 @@
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/rate_limiter.h"
+#include "system_wrappers/include/field_trial.h"
 
 namespace webrtc {
 namespace {
@@ -37,6 +38,7 @@ static const int64_t kRetransmitWindowSizeMs = 500;
 static const size_t kMaxOverheadBytes = 500;
 
 constexpr TimeDelta kPacerQueueUpdateInterval = TimeDelta::Millis(25);
+const char kLowLatencyStreaming[] = "OWT-LowLatencyMode";
 
 TargetRateConstraints ConvertConstraints(int min_bitrate_bps,
                                          int max_bitrate_bps,
@@ -53,6 +55,11 @@ TargetRateConstraints ConvertConstraints(int min_bitrate_bps,
   if (start_bitrate_bps > 0)
     msg.starting_rate = DataRate::BitsPerSec(start_bitrate_bps);
   return msg;
+}
+
+bool LowLatencyStreamingEnabled() {
+  std::string trial = webrtc::field_trial::FindFullName(kLowLatencyStreaming);
+  return trial.find("Enabled") == 0;
 }
 
 TargetRateConstraints ConvertConstraints(const BitrateConstraints& contraints,

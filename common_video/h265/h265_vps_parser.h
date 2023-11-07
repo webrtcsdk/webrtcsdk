@@ -14,9 +14,13 @@
 #include "absl/types/optional.h"
 #include "api/array_view.h"
 
+namespace rtc {
+class BitBuffer;
+}
+
 namespace webrtc {
 
-// A class for parsing out video parameter set (VPS) data from an H265 NALU.
+// A class for parsing out sequence parameter set (VPS) data from an H265 NALU.
 class H265VpsParser {
  public:
   // The parsed state of the VPS. Only some select values are stored.

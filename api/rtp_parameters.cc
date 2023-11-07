@@ -136,6 +136,7 @@ constexpr char RtpExtension::kRidUri[];
 constexpr char RtpExtension::kRepairedRidUri[];
 constexpr char RtpExtension::kVideoFrameTrackingIdUri[];
 constexpr char RtpExtension::kCsrcAudioLevelsUri[];
+constexpr char RtpExtension::kPictureIdUri[];
 
 constexpr int RtpExtension::kMinId;
 constexpr int RtpExtension::kMaxId;
@@ -171,7 +172,8 @@ bool RtpExtension::IsSupportedForVideo(absl::string_view uri) {
          uri == webrtc::RtpExtension::kRidUri ||
          uri == webrtc::RtpExtension::kRepairedRidUri ||
          uri == webrtc::RtpExtension::kVideoLayersAllocationUri ||
-         uri == webrtc::RtpExtension::kVideoFrameTrackingIdUri;
+         uri == webrtc::RtpExtension::kVideoFrameTrackingIdUri ||
+		 uri == webrtc::RtpExtension::kPictureIdUri;
 }
 
 bool RtpExtension::IsEncryptionSupported(absl::string_view uri) {

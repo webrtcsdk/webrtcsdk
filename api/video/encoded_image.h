@@ -233,6 +233,14 @@ class RTC_EXPORT EncodedImage {
   EncodedImage::Timing video_timing() const { return timing_; }
   EncodedImage::Timing* video_timing_mutable() { return &timing_; }
 
+#if defined(WEBRTC_WIN)
+  struct BWEStats {
+    double start_duration_ = 0;
+    double last_duration_ = 0;
+    int32_t packets_lost_ = 0;
+  }bwe_stats_;
+#endif
+
  private:
   size_t capacity() const { return encoded_data_ ? encoded_data_->size() : 0; }
 

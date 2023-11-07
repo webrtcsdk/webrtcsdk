@@ -92,6 +92,7 @@ const char kRtcpFbParamTransportCc[] = "transport-cc";
 const char kRtcpFbParamCcm[] = "ccm";
 const char kRtcpFbCcmParamFir[] = "fir";
 const char kRtcpFbParamRrtr[] = "rrtr";
+const char kRtcpFbNackParamRpsi[] = "rpsi";
 const char kCodecParamMaxBitrate[] = "x-google-max-bitrate";
 const char kCodecParamMinBitrate[] = "x-google-min-bitrate";
 const char kCodecParamStartBitrate[] = "x-google-start-bitrate";
@@ -113,6 +114,13 @@ const char kH264FmtpSpropParameterSets[] = "sprop-parameter-sets";
 const char kH264FmtpSpsPpsIdrInKeyframe[] = "sps-pps-idr-in-keyframe";
 const char kH264ProfileLevelConstrainedBaseline[] = "42e01f";
 const char kH264ProfileLevelConstrainedHigh[] = "640c1f";
+#ifdef WEBRTC_USE_H265
+// RFC 7798 RTP Payload Format for H.265 video
+const char kH265FmtpProfileSpace[] = "profile-space";
+const char kH265FmtpProfileId[] = "profile-id";
+const char kH265FmtpTierFlag[] = "tier-flag";
+const char kH265FmtpLevelId[] = "level-id";
+#endif
 
 // RFC 7798 RTP Payload Format for H.265 video
 const char kH265FmtpProfileSpace[] = "profile-space";
