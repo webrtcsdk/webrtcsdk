@@ -50,7 +50,7 @@ RtpFrameObject::RtpFrameObject(
   // VCMEncodedFrame members
   CopyCodecSpecific(&rtp_video_header_);
   _payloadType = payload_type;
-  SetTimestamp(rtp_timestamp);
+  SetRtpTimestamp(rtp_timestamp);
   ntp_time_ms_ = ntp_time_ms;
   _frameType = rtp_video_header_.frame_type;
 
@@ -61,6 +61,10 @@ RtpFrameObject::RtpFrameObject(
   SetEncodedData(image_buffer);
   _encodedWidth = rtp_video_header_.width;
   _encodedHeight = rtp_video_header_.height;
+
+  if (packet_infos.begin() != packet_infos.end()) {
+    csrcs_ = packet_infos.begin()->csrcs();
+  }
 
   // EncodedFrame members
   SetPacketInfos(std::move(packet_infos));
@@ -88,8 +92,7 @@ RtpFrameObject::RtpFrameObject(
   is_last_spatial_layer = markerBit;
 }
 
-RtpFrameObject::~RtpFrameObject() {
-}
+RtpFrameObject::~RtpFrameObject() {}
 
 uint16_t RtpFrameObject::first_seq_num() const {
   return first_seq_num_;
@@ -127,4 +130,7 @@ const RTPVideoHeader& RtpFrameObject::GetRtpVideoHeader() const {
   return rtp_video_header_;
 }
 
+void RtpFrameObject::SetHeaderFromMetadata(const VideoFrameMetadata& metadata) {
+  rtp_video_header_.SetFromMetadata(metadata);
+}
 }  // namespace webrtc

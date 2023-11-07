@@ -8,11 +8,14 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#ifndef MODULES_VIDEO_CODING_FRAME_OBJECT_H_
-#define MODULES_VIDEO_CODING_FRAME_OBJECT_H_
+#ifndef MODULES_RTP_RTCP_SOURCE_FRAME_OBJECT_H_
+#define MODULES_RTP_RTCP_SOURCE_FRAME_OBJECT_H_
+
+#include <vector>
 
 #include "absl/types/optional.h"
 #include "api/video/encoded_frame.h"
+#include "api/video/video_frame_metadata.h"
 
 namespace webrtc {
 
@@ -47,15 +50,15 @@ class RtpFrameObject : public EncodedFrame {
   bool delayed_by_retransmission() const override;
   const RTPVideoHeader& GetRtpVideoHeader() const;
   uint8_t* mutable_data() { return image_buffer_->data(); }
-#if defined(WEBRTC_WIN)
-  void SetBWETiming(double start_duration,
-      double last_duration,
-      int32_t packets_lost) {
-    bwe_stats_.start_duration_ = start_duration;
-    bwe_stats_.last_duration_ = last_duration;
-    bwe_stats_.packets_lost_ = packets_lost;
+
+  const std::vector<uint32_t>& Csrcs() const { return csrcs_; }
+
+  void SetFirstSeqNum(uint16_t first_seq_num) {
+    first_seq_num_ = first_seq_num;
   }
-#endif
+  void SetLastSeqNum(uint16_t last_seq_num) { last_seq_num_ = last_seq_num; }
+  void SetHeaderFromMetadata(const VideoFrameMetadata& metadata);
+
  private:
   // Reference for mutable access.
   rtc::scoped_refptr<EncodedImageBuffer> image_buffer_;
@@ -64,6 +67,7 @@ class RtpFrameObject : public EncodedFrame {
   uint16_t first_seq_num_;
   uint16_t last_seq_num_;
   int64_t last_packet_received_time_;
+  std::vector<uint32_t> csrcs_;
 
   // Equal to times nacked of the packet with the highet times nacked
   // belonging to this frame.
@@ -72,4 +76,4 @@ class RtpFrameObject : public EncodedFrame {
 
 }  // namespace webrtc
 
-#endif  // MODULES_VIDEO_CODING_FRAME_OBJECT_H_
+#endif  // MODULES_RTP_RTCP_SOURCE_FRAME_OBJECT_H_
