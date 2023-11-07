@@ -328,10 +328,6 @@ Timestamp PacingController::NextSendTime() const {
     }
   }
 
-  if (low_latency_mode_) {
-    return last_process_time_ + min_packet_limit_;
-  }
-
   // If queue contains a packet which should not be paced, its target send time
   // is the time at which it was enqueued.
   Timestamp unpaced_send_time = NextUnpacedSendTime();
@@ -391,7 +387,6 @@ void PacingController::ProcessPackets() {
   const Timestamp now = CurrentTime();
   Timestamp target_send_time = now;
 
-  // Disable padding for realtime mode
   if (ShouldSendKeepalive(now)) {
     DataSize keepalive_data_sent = DataSize::Zero();
     // We can not send padding unless a normal packet has first been sent. If
@@ -522,7 +517,7 @@ void PacingController::ProcessPackets() {
       target_send_time = NextSendTime();
       if (target_send_time > now) {
         // Exit loop if not probing.
-        if (!is_probing && !low_latency_mode_) {
+        if (!is_probing) {
           break;
         }
         target_send_time = now;
@@ -624,7 +619,7 @@ std::unique_ptr<RtpPacketToSend> PacingController::GetPendingPacket(
 
   // First, check if there is any reason _not_ to send the next queued packet.
   // Unpaced packets and probes are exempted from send checks.
-  if (NextUnpacedSendTime().IsInfinite() && !is_probe && !low_latency_mode_) {
+  if (NextUnpacedSendTime().IsInfinite() && !is_probe) {
     if (congested_) {
       // Don't send anything if congested.
       return nullptr;
