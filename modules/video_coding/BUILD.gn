@@ -172,8 +172,6 @@ rtc_library("video_coding") {
     "fec_controller_default.cc",
     "fec_controller_default.h",
     "fec_rate_table.h",
-    "frame_object.cc",
-    "frame_object.h",
     "generic_decoder.cc",
     "generic_decoder.h",
     "h264_sprop_parameter_sets.cc",
