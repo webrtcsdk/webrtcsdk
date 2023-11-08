@@ -152,13 +152,6 @@ RTC_EXPORT extern const char kH265FmtpTxMode[];
 
 extern const char kVP9ProfileId[];
 
-#ifdef RTC_ENABLE_H265
-// RFC 7798 RTP Payload Format for H.265 video
-RTC_EXPORT extern const char kH265FmtpProfileSpace[];
-RTC_EXPORT extern const char kH265FmtpProfileId[];
-RTC_EXPORT extern const char kH265FmtpTierFlag[];
-RTC_EXPORT extern const char kH265FmtpLevelId[];
-#endif
 extern const int kDefaultVideoMaxFramerate;
 extern const int kDefaultVideoMaxQpVpx;
 extern const int kDefaultVideoMaxQpH26x;
