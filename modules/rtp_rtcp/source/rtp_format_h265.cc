@@ -89,7 +89,7 @@ RtpPacketizerH265::RtpPacketizerH265(
             packetization_mode == H265PacketizationMode::SingleNalUnit);
 
   for (const auto& nalu :
-       H264::FindNaluIndices(payload.data(), payload.size())) {
+       H265::FindNaluIndices(payload.data(), payload.size())) {
     input_fragments_.push_back(
         payload.subview(nalu.payload_start_offset, nalu.payload_size));
   }
