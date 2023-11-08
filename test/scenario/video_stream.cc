@@ -211,7 +211,7 @@ rtc::scoped_refptr<VideoEncoderConfig::EncoderSpecificSettings>
 CreateEncoderSpecificSettings(VideoStreamConfig config) {
   using Codec = VideoStreamConfig::Encoder::Codec;
   switch (config.encoder.codec) {
-#ifdef WEBRTC_USE_H265
+#ifdef RTC_ENABLE_H265
     case Codec::kVideoCodecH265:
       return CreateH265SpecificSettings(config);
 #endif

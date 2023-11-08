@@ -225,11 +225,10 @@ bool H264AnnexBBufferToCMSampleBuffer(const uint8_t* annexb_buffer,
   return true;
 }
 
-#ifdef WEBRTC_USE_H265
-bool H265CMSampleBufferToAnnexBBuffer(
-    CMSampleBufferRef hvcc_sample_buffer,
-    bool is_keyframe,
-    rtc::Buffer* annexb_buffer) {
+#ifdef RTC_ENABLE_H265
+bool H265CMSampleBufferToAnnexBBuffer(CMSampleBufferRef hvcc_sample_buffer,
+                                      bool is_keyframe,
+                                      rtc::Buffer* annexb_buffer) {
   RTC_DCHECK(hvcc_sample_buffer);
 
   // Get format description from the sample buffer.
@@ -467,7 +466,7 @@ CMVideoFormatDescriptionRef CreateVideoFormatDescription(
   return description;
 }
 
-#ifdef WEBRTC_USE_H265
+#ifdef RTC_ENABLE_H265
 CMVideoFormatDescriptionRef CreateH265VideoFormatDescription(
     const uint8_t* annexb_buffer,
     size_t annexb_buffer_size) {
@@ -551,7 +550,7 @@ bool AnnexBBufferReader::SeekToNextNaluOfType(NaluType type) {
   return false;
 }
 
-#ifdef WEBRTC_USE_H265
+#ifdef RTC_ENABLE_H265
 bool AnnexBBufferReader::SeekToNextNaluOfType(H265::NaluType type) {
   for (; offset_ != offsets_.end(); ++offset_) {
     if (offset_->payload_size < 1)

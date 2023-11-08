@@ -63,7 +63,7 @@ class VCMSessionInfo {
   int Tl0PicId() const;
 
   std::vector<NaluInfo> GetNaluInfos() const;
-#ifdef WEBRTC_USE_H265
+#ifdef RTC_ENABLE_H265
   std::vector<H265NaluInfo> GetH265NaluInfos() const;
 #endif
 

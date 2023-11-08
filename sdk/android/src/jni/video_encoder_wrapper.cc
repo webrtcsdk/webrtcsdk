@@ -13,7 +13,7 @@
 #include <utility>
 
 #include "common_video/h264/h264_common.h"
-#ifdef WEBRTC_USE_H265
+#ifdef RTC_ENABLE_H265
 #include "common_video/h265/h265_common.h"
 #endif
 #include "modules/video_coding/include/video_codec_interface.h"

@@ -18,10 +18,10 @@
 
 #include "common_video/h264/h264_common.h"
 #include "modules/video_coding/codecs/h264/include/h264.h"
-#ifdef WEBRTC_USE_H265
+#ifdef RTC_ENABLE_H265
 #include "common_video/h265/h265_common.h"
 #endif
-// #include "modules/include/module_common_types.h"
+#include "modules/include/module_common_types.h"
 #include "rtc_base/buffer.h"
 
 using webrtc::H264::NaluIndex;
@@ -47,18 +47,17 @@ bool H264AnnexBBufferToCMSampleBuffer(const uint8_t* annexb_buffer,
                                       CMSampleBufferRef* out_sample_buffer,
                                       CMMemoryPoolRef memory_pool);
 
-#ifdef WEBRTC_USE_H265
+#ifdef RTC_ENABLE_H265
 // Converts a sample buffer emitted from the VideoToolbox encoder into a buffer
 // suitable for RTP. The sample buffer is in hvcc format whereas the rtp buffer
 // needs to be in Annex B format. Data is written directly to |annexb_buffer|
 // and a new RTPFragmentationHeader is returned in |out_header|.
-bool H265CMSampleBufferToAnnexBBuffer(
-    CMSampleBufferRef hvcc_sample_buffer,
-    bool is_keyframe,
-    rtc::Buffer* annexb_buffer)
+bool H265CMSampleBufferToAnnexBBuffer(CMSampleBufferRef hvcc_sample_buffer,
+                                      bool is_keyframe,
+                                      rtc::Buffer* annexb_buffer)
     __OSX_AVAILABLE_STARTING(__MAC_10_12, __IPHONE_11_0);
 
- // Converts a buffer received from RTP into a sample buffer suitable for the
+// Converts a buffer received from RTP into a sample buffer suitable for the
 // VideoToolbox decoder. The RTP buffer is in annex b format whereas the sample
 // buffer is in hvcc format.
 // If |is_keyframe| is true then |video_format| is ignored since the format will
@@ -78,7 +77,7 @@ CMVideoFormatDescriptionRef CreateVideoFormatDescription(
     const uint8_t* annexb_buffer,
     size_t annexb_buffer_size);
 
-#ifdef WEBRTC_USE_H265
+#ifdef RTC_ENABLE_H265
 CMVideoFormatDescriptionRef CreateH265VideoFormatDescription(
     const uint8_t* annexb_buffer,
     size_t annexb_buffer_size)
@@ -109,7 +108,7 @@ class AnnexBBufferReader final {
   // Return true if a NALU of the desired type is found, false if we
   // reached the end instead
   bool SeekToNextNaluOfType(H264::NaluType type);
-#ifdef WEBRTC_USE_H265
+#ifdef RTC_ENABLE_H265
   bool SeekToNextNaluOfType(H265::NaluType type);
 #endif
 

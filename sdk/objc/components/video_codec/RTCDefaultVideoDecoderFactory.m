@@ -20,7 +20,7 @@
 #if defined(RTC_DAV1D_IN_INTERNAL_DECODER_FACTORY)
 #import "api/video_codec/RTCVideoDecoderAV1.h"  // nogncheck
 #endif
-#ifdef WEBRTC_USE_H265
+#ifdef RTC_ENABLE_H265
 #import "RTCH265ProfileLevelId.h"
 #import "RTCVideoDecoderH265.h"
 #endif
@@ -49,7 +49,7 @@
   RTC_OBJC_TYPE(RTCVideoCodecInfo) *vp8Info =
       [[RTC_OBJC_TYPE(RTCVideoCodecInfo) alloc] initWithName:kRTCVideoCodecVp8Name];
 
-#ifdef WEBRTC_USE_H265
+#ifdef RTC_ENABLE_H265
   RTCVideoCodecInfo *h265Info = [[RTCVideoCodecInfo alloc] initWithName:kRTCVideoCodecH265Name];
 #endif
 
@@ -57,7 +57,7 @@
     constrainedHighInfo,
     constrainedBaselineInfo,
     vp8Info,
-#ifdef WEBRTC_USE_H265
+#ifdef RTC_ENABLE_H265
     h265Info,
 #endif
   ] mutableCopy];
@@ -93,7 +93,7 @@
     return [RTC_OBJC_TYPE(RTCVideoDecoderAV1) av1Decoder];
   }
 #endif
-#ifdef WEBRTC_USE_H265
+#ifdef RTC_ENABLE_H265
   if (@available(iOS 11, *)) {
     if ([info.name isEqualToString:kRTCVideoCodecH265Name]) {
       return [[RTCVideoDecoderH265 alloc] init];

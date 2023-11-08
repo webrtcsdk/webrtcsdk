@@ -23,14 +23,14 @@
 #include "api/rtp_packet_info.h"
 #include "api/video/video_frame_type.h"
 #include "common_video/h264/h264_common.h"
-#ifdef WEBRTC_USE_H265
+#ifdef RTC_ENABLE_H265
 #include "common_video/h265/h265_common.h"
 #endif
 #include "modules/rtp_rtcp/source/rtp_header_extensions.h"
 #include "modules/rtp_rtcp/source/rtp_packet_received.h"
 #include "modules/rtp_rtcp/source/rtp_video_header.h"
 #include "modules/video_coding/codecs/h264/include/h264_globals.h"
-#ifdef WEBRTC_USE_H265
+#ifdef RTC_ENABLE_H265
 #include "modules/video_coding/codecs/h265/include/h265_globals.h"
 #endif
 #include "rtc_base/checks.h"
@@ -282,7 +282,7 @@ std::vector<std::unique_ptr<PacketBuffer::Packet>> PacketBuffer::FindFrames(
       bool is_h264_keyframe = false;
 
       bool is_h265 = false;
-#ifdef WEBRTC_USE_H265
+#ifdef RTC_ENABLE_H265
       is_h265 = buffer_[start_index]->codec() == kVideoCodecH265;
       bool has_h265_sps = false;
       bool has_h265_pps = false;
@@ -334,7 +334,7 @@ std::vector<std::unique_ptr<PacketBuffer::Packet>> PacketBuffer::FindFrames(
             }
           }
         }
-#ifdef WEBRTC_USE_H265
+#ifdef RTC_ENABLE_H265
         if (is_h265 && !is_h265_keyframe) {
           const auto* h265_header = absl::get_if<RTPVideoHeaderH265>(
               &buffer_[start_index]->video_header.video_type_header);
@@ -345,9 +345,10 @@ std::vector<std::unique_ptr<PacketBuffer::Packet>> PacketBuffer::FindFrames(
               has_h265_sps = true;
             } else if (h265_header->nalus[j].type == H265::NaluType::kPps) {
               has_h265_pps = true;
-            } else if (h265_header->nalus[j].type == H265::NaluType::kIdrWRadl
-                       || h265_header->nalus[j].type == H265::NaluType::kIdrNLp
-                       || h265_header->nalus[j].type == H265::NaluType::kCra) {
+            } else if (h265_header->nalus[j].type ==
+                           H265::NaluType::kIdrWRadl ||
+                       h265_header->nalus[j].type == H265::NaluType::kIdrNLp ||
+                       h265_header->nalus[j].type == H265::NaluType::kCra) {
               has_h265_idr = true;
             }
           }
@@ -420,7 +421,7 @@ std::vector<std::unique_ptr<PacketBuffer::Packet>> PacketBuffer::FindFrames(
         }
       }
 
-#ifdef WEBRTC_USE_H265
+#ifdef RTC_ENABLE_H265
       if (is_h265) {
         // Warn if this is an unsafe frame.
         if (has_h265_idr && (!has_h265_sps || !has_h265_pps)) {
@@ -452,7 +453,7 @@ std::vector<std::unique_ptr<PacketBuffer::Packet>> PacketBuffer::FindFrames(
         // If this is not a key frame, make sure there are no gaps in the
         // packet sequence numbers up until this point.
         if (!is_h265_keyframe && missing_packets_.upper_bound(start_seq_num) !=
-                missing_packets_.begin()) {
+                                     missing_packets_.begin()) {
           return found_frames;
         }
       }

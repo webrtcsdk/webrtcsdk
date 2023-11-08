@@ -114,7 +114,7 @@ extern const char kRtcpFbParamRrtr[];
 // Reference picture selection indications
 // https://tools.ietf.org/html/rfc4585 section 6.3.3
 extern const char kRtcpFbNackParamRpsi[];
-    // Google specific parameters
+// Google specific parameters
 extern const char kCodecParamMaxBitrate[];
 extern const char kCodecParamMinBitrate[];
 extern const char kCodecParamStartBitrate[];
@@ -152,7 +152,7 @@ RTC_EXPORT extern const char kH265FmtpTxMode[];
 
 extern const char kVP9ProfileId[];
 
-#ifdef WEBRTC_USE_H265
+#ifdef RTC_ENABLE_H265
 // RFC 7798 RTP Payload Format for H.265 video
 RTC_EXPORT extern const char kH265FmtpProfileSpace[];
 RTC_EXPORT extern const char kH265FmtpProfileId[];

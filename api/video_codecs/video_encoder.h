@@ -338,7 +338,7 @@ class RTC_EXPORT VideoEncoder {
   static VideoCodecVP8 GetDefaultVp8Settings();
   static VideoCodecVP9 GetDefaultVp9Settings();
   static VideoCodecH264 GetDefaultH264Settings();
-#ifdef WEBRTC_USE_H265
+#ifdef RTC_ENABLE_H265
   static VideoCodecH265 GetDefaultH265Settings();
 #endif
 
