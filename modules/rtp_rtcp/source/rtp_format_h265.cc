@@ -187,7 +187,6 @@ bool RtpPacketizerH265::PacketizeFu(size_t fragment_index) {
   return true;
 }
 
-
 bool RtpPacketizerH265::PacketizeSingleNalu(size_t fragment_index) {
   // Add a single NALU to the queue, no aggregation.
   size_t payload_size_left = limits_.max_payload_len;
@@ -197,7 +196,10 @@ bool RtpPacketizerH265::PacketizeSingleNalu(size_t fragment_index) {
     payload_size_left -= limits_.first_packet_reduction_len;
   else if (fragment_index + 1 == input_fragments_.size())
     payload_size_left -= limits_.last_packet_reduction_len;
+
   rtc::ArrayView<const uint8_t> fragment = input_fragments_[fragment_index];
+
+  // Check if the payload size left is enough for the fragment.
   if (payload_size_left < fragment.size()) {
     RTC_LOG(LS_ERROR) << "Failed to fit a fragment to packet in SingleNalu "
                          "packetization mode. Payload size left "
@@ -206,7 +208,14 @@ bool RtpPacketizerH265::PacketizeSingleNalu(size_t fragment_index) {
                       << limits_.max_payload_len;
     return false;
   }
-  RTC_CHECK_GT(fragment.size(), 0u);
+
+  // Check if the fragment size is greater than 0.
+  if (fragment.size() == 0) {
+    RTC_LOG(LS_ERROR) << "Fragment has size 0 in SingleNalu packetization mode.";
+    return false;
+  }
+
+  // Add the fragment to the packet queue.
   packets_.push(PacketUnit(fragment, true /* first */, true /* last */,
                            false /* aggregated */, fragment[0]));
   ++num_packets_left_;
