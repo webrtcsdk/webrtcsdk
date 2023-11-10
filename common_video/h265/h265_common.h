@@ -68,8 +68,8 @@ struct NaluIndex {
 };
 
 // Returns a vector of the NALU indices in the given buffer.
-std::vector<NaluIndex> FindNaluIndices(const uint8_t* data,
-                                     size_t length);
+std::vector<NaluIndex> FindNaluIndices(const uint8_t* buffer,
+                                        size_t buffer_size);
 
 // Get the NAL type from the header byte immediately following start sequence.
 NaluType ParseNaluType(uint8_t data);
