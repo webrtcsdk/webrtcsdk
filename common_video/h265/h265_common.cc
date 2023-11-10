@@ -17,30 +17,44 @@ namespace H265 {
 const uint8_t kNaluTypeMask = 0x7E;
 
 std::vector<NaluIndex> FindNaluIndices(const uint8_t* buffer,
-                                        size_t buffer_size) {
+                                           size_t buffer_size) {
   std::vector<NaluIndex> sequences;
-  if (buffer_size < kNaluShortStartSequenceSize) {
+  if (buffer_size < kNaluShortStartSequenceSize)
     return sequences;
-  }
+
+  static_assert(kNaluShortStartSequenceSize >= 2,
+                "kNaluShortStartSequenceSize must be larger or equals to 2");
 
   const size_t end = buffer_size - kNaluShortStartSequenceSize;
   for (size_t i = 0; i < end;) {
-    if (buffer[i + 2] > 1) {
-      i += 3;
-    } else if (buffer[i + 2] == 0x01 && buffer[i + 1] == 0x00 && buffer[i] == 0x00) {
-      // We found a start sequence, now check if it was a 3 of 4 byte one.
-      NaluIndex index = {i, i + 3, 0};
-      if (index.start_offset > 0 && buffer[index.start_offset - 1] == 0)
-        --index.start_offset;
+    if (buffer[i + 2] == 0) {
+      if (buffer[i + 1] == 0 && buffer[i] == 1) {
+        // We found a start sequence, now check if it was a 3 or 4-byte one.
+        NaluIndex index = {i, i + 3, 0};
+        if (index.start_offset > 0 && buffer[index.start_offset - 1] == 0)
+          --index.start_offset;
 
-      // Update length of previous entry.
-      auto it = sequences.rbegin();
-      if (it != sequences.rend())
-        it->payload_size = index.start_offset - it->payload_start_offset;
+        // Update length of previous entry.
+        auto it = sequences.rbegin();
+        if (it != sequences.rend())
+          it->payload_size = index.start_offset - it->payload_start_offset;
 
-      sequences.push_back(index);
+        sequences.push_back(index);
+        i += 3;
+      } else if (buffer[i + 1] == 0 && buffer[i] == 0 && buffer[i + 3] == 1) {
+        // 4-byte start sequence
+        NaluIndex index = {i, i + 4, 0};
 
-      i += 3;
+        // Update length of previous entry.
+        auto it = sequences.rbegin();
+        if (it != sequences.rend())
+          it->payload_size = index.start_offset - it->payload_start_offset;
+
+        sequences.push_back(index);
+        i += 4;
+      } else {
+        ++i;
+      }
     } else {
       ++i;
     }
