@@ -215,6 +215,8 @@ bool RtpPacketizerH265::PacketizeSingleNalu(size_t fragment_index) {
     return false;
   }
 
+  RTC_CHECK_GT(fragment.size(), 0u);
+
   // Add the fragment to the packet queue.
   packets_.push(PacketUnit(fragment, true /* first */, true /* last */,
                            false /* aggregated */, fragment[0]));
