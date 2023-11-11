@@ -79,7 +79,7 @@ class RtpPacketizerH265 : public RtpPacketizer {
     std::unique_ptr<rtc::Buffer> tmp_buffer;
   };
   struct PacketUnit {
-    PacketUnit(rtc::ArrayView<const uint8_t> source_fragment,
+    PacketUnit(const Fragment& source_fragment,
                bool first_fragment,
                bool last_fragment,
                bool aggregated,
@@ -90,14 +90,14 @@ class RtpPacketizerH265 : public RtpPacketizer {
           aggregated(aggregated),
           header(header) {}
 
-    rtc::ArrayView<const uint8_t> source_fragment;
+    const Fragment source_fragment;
     bool first_fragment;
     bool last_fragment;
     bool aggregated;
     uint16_t header;
   };
   typedef std::queue<Packet> PacketQueue;
-  std::deque<rtc::ArrayView<const uint8_t>> input_fragments_;
+  std::deque<Fragment> input_fragments_;
   std::queue<PacketUnit> packets_;
 
   bool GeneratePackets(H265PacketizationMode packetization_mode);
