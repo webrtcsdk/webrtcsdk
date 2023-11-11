@@ -293,7 +293,7 @@ bool RtpPacketizerH265::NextPacket(RtpPacketToSend* rtp_packet) {
   } else {
     NextFragmentPacket(rtp_packet);
   }
-  rtp_packet->SetMarker(packets_.empty());
+  rtp_packet->SetMarker(packets_.empty() && end_of_frame_);
   --num_packets_left_;
   return true;
 }
