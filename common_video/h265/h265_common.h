@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2023 The WebRTC project authors. All Rights Reserved.
+ *  Copyright (c) 2018 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
  *  that can be found in the LICENSE file in the root of the source
@@ -69,7 +69,7 @@ struct NaluIndex {
 
 // Returns a vector of the NALU indices in the given buffer.
 std::vector<NaluIndex> FindNaluIndices(const uint8_t* buffer,
-                                        size_t buffer_size);
+                                       size_t buffer_size);
 
 // Get the NAL type from the header byte immediately following start sequence.
 NaluType ParseNaluType(uint8_t data);

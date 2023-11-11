@@ -82,16 +82,15 @@ RtpPacketizerH265::RtpPacketizerH265(
     H265PacketizationMode packetization_mode,
     bool end_of_frame)
     : limits_(limits),
-      num_packets_left_(0),
+      num_packets_left_(0), 
       end_of_frame_(end_of_frame) {
   // Guard against uninitialized memory in packetization_mode.
   RTC_CHECK(packetization_mode == H265PacketizationMode::NonInterleaved ||
             packetization_mode == H265PacketizationMode::SingleNalUnit);
 
   for (const auto& nalu :
-       H265::FindNaluIndices(payload.data(), payload.size())) {
-    input_fragments_.push_back(
-        payload.subview(nalu.payload_start_offset, nalu.payload_size));
+    H265::FindNaluIndices(payload.data(), payload.size())) {
+    input_fragments_.push_back(Fragment(payload.data() + nalu.payload_start_offset, nalu.payload_size));
   }
 
   if (!GeneratePackets(packetization_mode)) {
@@ -111,12 +110,18 @@ size_t RtpPacketizerH265::NumPackets() const {
   return num_packets_left_;
 }
 
+RtpPacketizerH265::Fragment::Fragment(const uint8_t* buffer, size_t length)
+    : buffer(buffer), length(length) {}
+RtpPacketizerH265::Fragment::Fragment(const Fragment& fragment)
+    : buffer(fragment.buffer), length(fragment.length) {}
+
+
 bool RtpPacketizerH265::GeneratePackets(
     H265PacketizationMode packetization_mode) {
   // For HEVC we follow non-interleaved mode for the packetization,
   // and don't support single-nalu mode at present.
   for (size_t i = 0; i < input_fragments_.size();) {
-    int fragment_len = input_fragments_[i].size();
+    int fragment_len = input_fragments_[i].length;
     int single_packet_capacity = limits_.max_payload_len;
     if (input_fragments_.size() == 1)
       single_packet_capacity -= limits_.single_packet_reduction_len;
@@ -141,7 +146,7 @@ bool RtpPacketizerH265::GeneratePackets(
 bool RtpPacketizerH265::PacketizeFu(size_t fragment_index) {
   // Fragment payload into packets (FU).
   // Strip out the original header and leave room for the FU header.
-  rtc::ArrayView<const uint8_t> fragment = input_fragments_[fragment_index];
+  const Fragment& fragment = input_fragments_[fragment_index];
   PayloadSizeLimits limits = limits_;
   limits.max_payload_len -= kHevcFuHeaderSize + kHevcNalHeaderSize;
 
@@ -164,7 +169,7 @@ bool RtpPacketizerH265::PacketizeFu(size_t fragment_index) {
     limits.last_packet_reduction_len = 0;
 
   // Strip out the original header.
-  size_t payload_left = fragment.size() - kHevcNalHeaderSize;
+  size_t payload_left = fragment.length - kHevcNalHeaderSize;
   int offset = kHevcNalHeaderSize;
 
   std::vector<int> payload_sizes = SplitAboutEqually(payload_left, limits);
@@ -174,8 +179,8 @@ bool RtpPacketizerH265::PacketizeFu(size_t fragment_index) {
   for (size_t i = 0; i < payload_sizes.size(); ++i) {
     int packet_length = payload_sizes[i];
     RTC_CHECK_GT(packet_length, 0);
-    uint16_t header = (fragment[0] << 8) | fragment[1];
-    packets_.push(PacketUnit(fragment.subview(offset, packet_length),
+    uint16_t header = (fragment.buffer[0] << 8) | fragment.buffer[1];
+    packets_.push(PacketUnit(Fragment(fragment.buffer + offset, packet_length),
                              /*first_fragment=*/i == 0,
                              /*last_fragment=*/i == payload_sizes.size() - 1,
                              false, header));
@@ -187,6 +192,7 @@ bool RtpPacketizerH265::PacketizeFu(size_t fragment_index) {
   return true;
 }
 
+
 bool RtpPacketizerH265::PacketizeSingleNalu(size_t fragment_index) {
   // Add a single NALU to the queue, no aggregation.
   size_t payload_size_left = limits_.max_payload_len;
@@ -196,30 +202,18 @@ bool RtpPacketizerH265::PacketizeSingleNalu(size_t fragment_index) {
     payload_size_left -= limits_.first_packet_reduction_len;
   else if (fragment_index + 1 == input_fragments_.size())
     payload_size_left -= limits_.last_packet_reduction_len;
-
-  rtc::ArrayView<const uint8_t> fragment = input_fragments_[fragment_index];
-
-  // Check if the payload size left is enough for the fragment.
-  if (payload_size_left < fragment.size()) {
+  const Fragment* fragment = &input_fragments_[fragment_index];
+  if (payload_size_left < fragment->length) {
     RTC_LOG(LS_ERROR) << "Failed to fit a fragment to packet in SingleNalu "
                          "packetization mode. Payload size left "
                       << payload_size_left << ", fragment length "
-                      << fragment.size() << ", packet capacity "
+                      << fragment->length << ", packet capacity "
                       << limits_.max_payload_len;
     return false;
   }
-
-  // Check if the fragment size is greater than 0.
-  if (fragment.size() == 0) {
-    RTC_LOG(LS_ERROR) << "Fragment has size 0 in SingleNalu packetization mode.";
-    return false;
-  }
-
-  RTC_CHECK_GT(fragment.size(), 0u);
-
-  // Add the fragment to the packet queue.
-  packets_.push(PacketUnit(fragment, true /* first */, true /* last */,
-                           false /* aggregated */, fragment[0]));
+  RTC_CHECK_GT(fragment->length, 0u);
+  packets_.push(PacketUnit(*fragment, true /* first */, true /* last */,
+                           false /* aggregated */, fragment->buffer[0]));
   ++num_packets_left_;
   return true;
 }
@@ -233,12 +227,12 @@ int RtpPacketizerH265::PacketizeAp(size_t fragment_index) {
     payload_size_left -= limits_.first_packet_reduction_len;
   int aggregated_fragments = 0;
   size_t fragment_headers_length = 0;
-  rtc::ArrayView<const uint8_t> fragment = input_fragments_[fragment_index];
-  RTC_CHECK_GE(payload_size_left, fragment.size());
+  const Fragment* fragment = &input_fragments_[fragment_index];
+  RTC_CHECK_GE(payload_size_left, fragment->length);
   ++num_packets_left_;
 
   auto payload_size_needed = [&] {
-    size_t fragment_size = fragment.size() + fragment_headers_length;
+    size_t fragment_size = fragment->length + fragment_headers_length;
     if (input_fragments_.size() == 1) {
       // Single fragment, single packet, payload_size_left already adjusted
       // with limits_.single_packet_reduction_len.
@@ -252,10 +246,10 @@ int RtpPacketizerH265::PacketizeAp(size_t fragment_index) {
   };
 
   while (payload_size_left >= payload_size_needed()) {
-    RTC_CHECK_GT(fragment.size(), 0);
-    packets_.push(PacketUnit(fragment, aggregated_fragments == 0, false, true,
-                             fragment[0]));
-    payload_size_left -= fragment.size();
+    RTC_CHECK_GT(fragment->length, 0);
+    packets_.push(PacketUnit(*fragment, aggregated_fragments == 0, false, true,
+                             fragment->buffer[0]));
+    payload_size_left -= fragment->length;
     payload_size_left -= fragment_headers_length;
 
     fragment_headers_length = kHevcLengthFieldSize;
@@ -270,7 +264,7 @@ int RtpPacketizerH265::PacketizeAp(size_t fragment_index) {
     ++fragment_index;
     if (fragment_index == input_fragments_.size())
       break;
-    fragment = input_fragments_[fragment_index];
+    fragment = &input_fragments_[fragment_index];
   }
   RTC_CHECK_GT(aggregated_fragments, 0);
   packets_.back().last_fragment = true;
@@ -288,9 +282,9 @@ bool RtpPacketizerH265::NextPacket(RtpPacketToSend* rtp_packet) {
 
   if (packet.first_fragment && packet.last_fragment) {
     // Single NAL unit packet.
-    size_t bytes_to_send = packet.source_fragment.size();
+    size_t bytes_to_send = packet.source_fragment.length;
     uint8_t* buffer = rtp_packet->AllocatePayload(bytes_to_send);
-    memcpy(buffer, packet.source_fragment.data(), bytes_to_send);
+    memcpy(buffer, packet.source_fragment.buffer, bytes_to_send);
     packets_.pop();
     input_fragments_.pop_front();
   } else if (packet.aggregated) {
@@ -299,7 +293,7 @@ bool RtpPacketizerH265::NextPacket(RtpPacketToSend* rtp_packet) {
   } else {
     NextFragmentPacket(rtp_packet);
   }
-  rtp_packet->SetMarker(packets_.empty() && end_of_frame_);
+  rtp_packet->SetMarker(packets_.empty());
   --num_packets_left_;
   return true;
 }
@@ -309,7 +303,7 @@ void RtpPacketizerH265::NextAggregatePacket(RtpPacketToSend* rtp_packet,
   size_t payload_capacity = rtp_packet->FreeCapacity();
   RTC_CHECK_GE(payload_capacity, kHevcNalHeaderSize);
   uint8_t* buffer = rtp_packet->AllocatePayload(payload_capacity);
-  RTC_CHECK(buffer);
+
   PacketUnit* packet = &packets_.front();
   RTC_CHECK(packet->first_fragment);
   uint8_t payload_hdr_h = packet->header >> 8;
@@ -325,12 +319,12 @@ void RtpPacketizerH265::NextAggregatePacket(RtpPacketToSend* rtp_packet,
   bool is_last_fragment = packet->last_fragment;
   while (packet->aggregated) {
     // Add NAL unit length field.
-    rtc::ArrayView<const uint8_t> fragment = packet->source_fragment;
-    ByteWriter<uint16_t>::WriteBigEndian(&buffer[index], fragment.size());
+    const Fragment& fragment = packet->source_fragment;
+    ByteWriter<uint16_t>::WriteBigEndian(&buffer[index], fragment.length);
     index += kHevcLengthFieldSize;
     // Add NAL unit.
-    memcpy(&buffer[index], fragment.data(), fragment.size());
-    index += fragment.size();
+    memcpy(&buffer[index], fragment.buffer, fragment.length);
+    index += fragment.length;
     packets_.pop();
     input_fragments_.pop_front();
     if (is_last_fragment)
@@ -360,20 +354,19 @@ void RtpPacketizerH265::NextFragmentPacket(RtpPacketToSend* rtp_packet) {
   // Now update payload_hdr_h with FU type.
   payload_hdr_h =
       (payload_hdr_h & kHevcTypeMaskN) | (kHevcFu << 1) | layer_id_h;
-  rtc::ArrayView<const uint8_t> fragment = packet->source_fragment;
+  const Fragment& fragment = packet->source_fragment;
   uint8_t* buffer = rtp_packet->AllocatePayload(
-      kHevcFuHeaderSize + kHevcNalHeaderSize + fragment.size());
-  RTC_CHECK(buffer);
+      kHevcFuHeaderSize + kHevcNalHeaderSize + fragment.length);
   buffer[0] = payload_hdr_h;
   buffer[1] = payload_hdr_l;
   buffer[2] = fu_header;
 
   if (packet->last_fragment) {
-    memcpy(buffer + kHevcFuHeaderSize + kHevcNalHeaderSize, fragment.data(),
-           fragment.size());
+    memcpy(buffer + kHevcFuHeaderSize + kHevcNalHeaderSize, fragment.buffer,
+           fragment.length);
   } else {
-    memcpy(buffer + kHevcFuHeaderSize + kHevcNalHeaderSize, fragment.data(),
-           fragment.size());
+    memcpy(buffer + kHevcFuHeaderSize + kHevcNalHeaderSize, fragment.buffer,
+           fragment.length);
   }
   packets_.pop();
 }

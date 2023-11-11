@@ -71,6 +71,13 @@ class RtpPacketizerH265 : public RtpPacketizer {
     bool aggregated;
     uint16_t header;  // Different from H264
   };
+  struct Fragment {
+    Fragment(const uint8_t* buffer, size_t length);
+    explicit Fragment(const Fragment& fragment);
+    const uint8_t* buffer = nullptr;
+    size_t length = 0;
+    std::unique_ptr<rtc::Buffer> tmp_buffer;
+  };
   struct PacketUnit {
     PacketUnit(rtc::ArrayView<const uint8_t> source_fragment,
                bool first_fragment,
