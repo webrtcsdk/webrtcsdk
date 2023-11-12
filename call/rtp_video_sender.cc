@@ -602,7 +602,7 @@ EncodedImageCallback::Result RtpVideoSender::OnEncodedImage(
   TimeDelta expected_retransmission_time = TimeDelta::PlusInfinity();
   if (encoded_image.RetransmissionAllowed()) {
     expected_retransmission_time =
-        rtp_streams_[simulcast_index].rtp_rtcp->ExpectedRetransmissionTime();
+        rtp_streams_[stream_index].rtp_rtcp->ExpectedRetransmissionTime();
   }
 
   if (encoded_image._frameType == VideoFrameType::kVideoFrameKey) {
