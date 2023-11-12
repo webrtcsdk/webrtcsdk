@@ -323,6 +323,7 @@ bool TransportSeqNumExtensionConfigured(const RtpConfig& config) {
 // e.g. it is the same as a key frame when spatial scalability is not used.
 // When spatial scalability is used, then it is true for layer frames of
 // a key frame without inter-layer dependencies.
+#ifndef RTC_ENABLE_H265
 bool IsFirstFrameOfACodedVideoSequence(
     const EncodedImage& encoded_image,
     const CodecSpecificInfo* codec_specific_info) {
@@ -350,7 +351,7 @@ bool IsFirstFrameOfACodedVideoSequence(
     }
   }
 
-  // Without depenedencies described in generic format do an educated guess.
+  // Without dependencies described in generic format do an educated guess.
   // It might be wrong for VP9 with spatial layer 0 skipped or higher spatial
   // layer not depending on the spatial layer 0. This corner case is unimportant
   // for current usage of this helper function.
@@ -358,7 +359,7 @@ bool IsFirstFrameOfACodedVideoSequence(
   // Use <= to accept both 0 (i.e. the first) and nullopt (i.e. the only).
   return encoded_image.SpatialIndex() <= 0;
 }
-
+#endif
 }  // namespace
 
 RtpVideoSender::RtpVideoSender(
