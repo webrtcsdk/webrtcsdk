@@ -565,7 +565,7 @@ bool RtpVideoSender::IsActiveLocked() {
 EncodedImageCallback::Result RtpVideoSender::OnEncodedImage(
     const EncodedImage& encoded_image,
     const CodecSpecificInfo* codec_specific_info) {
-  #ifdef RTC_ENABLE_H265
+#ifdef RTC_ENABLE_H265
   fec_controller_->UpdateWithEncodedData(encoded_image.size(),
                                          encoded_image._frameType);
   MutexLock lock(&mutex_);
@@ -585,31 +585,30 @@ EncodedImageCallback::Result RtpVideoSender::OnEncodedImage(
   RTC_DCHECK_LT(stream_index, rtp_streams_.size());
 
   uint32_t rtp_timestamp =
-      encoded_image.Timestamp() +
-      rtp_streams_[stream_index].rtp_rtcp->StartTimestamp();
+      encoded_image.RtpTimestamp() + rtp_streams_[stream_index].rtp_rtcp->StartTimestamp();
 
-  // RTCPSender has it's own copy of the timestamp offset, added in
-  // RTCPSender::BuildSR, hence we must not add the in the offset for this call.
-  // TODO(nisse): Delete RTCPSender:timestamp_offset_, and see if we can confine
+  // RTCPSender has its own copy of the timestamp offset, added in
+  // RTCPSender::BuildSR, hence we must not add the offset for this call.
+  // TODO(nisse): Delete RTCPSender::timestamp_offset_, and see if we can confine
   // knowledge of the offset to a single place.
   if (!rtp_streams_[stream_index].rtp_rtcp->OnSendingRtpFrame(
-          encoded_image.Timestamp(), encoded_image.capture_time_ms_,
+          encoded_image.RtpTimestamp(), encoded_image.capture_time_ms_,
           rtp_config_.payload_type,
           encoded_image._frameType == VideoFrameType::kVideoFrameKey)) {
     // The payload router could be active but this module isn't sending.
     return Result(Result::ERROR_SEND_FAILED);
   }
 
-  absl::optional<int64_t> expected_retransmission_time_ms;
+  absl::optional<TimeDelta> expected_retransmission_time_ms;
   if (encoded_image.RetransmissionAllowed()) {
     expected_retransmission_time_ms =
-        rtp_streams_[stream_index].rtp_rtcp->ExpectedRetransmissionTimeMs();
+        rtp_streams_[stream_index].rtp_rtcp->ExpectedRetransmissionTime();
   }
 
   if (encoded_image._frameType == VideoFrameType::kVideoFrameKey) {
-    // If encoder adapter produce FrameDependencyStructure, pass it so that
-    // dependency descriptor rtp header extension can be used.
-    // If not supported, disable using dependency descriptor by passing nullptr.
+    // If the encoder adapter produces FrameDependencyStructure, pass it so that
+    // dependency descriptor RTP header extension can be used.
+    // If not supported, disable using the dependency descriptor by passing nullptr.
     rtp_streams_[stream_index].sender_video->SetVideoStructure(
         (codec_specific_info && codec_specific_info->template_structure)
             ? &*codec_specific_info->template_structure
@@ -637,7 +636,7 @@ EncodedImageCallback::Result RtpVideoSender::OnEncodedImage(
     return Result(Result::ERROR_SEND_FAILED);
 
   return Result(Result::OK, rtp_timestamp);
-  else
+#else
   fec_controller_->UpdateWithEncodedData(encoded_image.size(),
                                          encoded_image._frameType);
   MutexLock lock(&mutex_);
@@ -653,9 +652,9 @@ EncodedImageCallback::Result RtpVideoSender::OnEncodedImage(
       encoded_image.RtpTimestamp() +
       rtp_streams_[simulcast_index].rtp_rtcp->StartTimestamp();
 
-  // RTCPSender has it's own copy of the timestamp offset, added in
-  // RTCPSender::BuildSR, hence we must not add the in the offset for this call.
-  // TODO(nisse): Delete RTCPSender:timestamp_offset_, and see if we can confine
+  // RTCPSender has its own copy of the timestamp offset, added in
+  // RTCPSender::BuildSR, hence we must not add the offset for this call.
+  // TODO(nisse): Delete RTCPSender::timestamp_offset_, and see if we can confine
   // knowledge of the offset to a single place.
   if (!rtp_streams_[simulcast_index].rtp_rtcp->OnSendingRtpFrame(
           encoded_image.RtpTimestamp(), encoded_image.capture_time_ms_,
@@ -714,7 +713,7 @@ EncodedImageCallback::Result RtpVideoSender::OnEncodedImage(
     return Result(Result::ERROR_SEND_FAILED);
 
   return Result(Result::OK, rtp_timestamp);
-  #endif
+#endif
 }
 
 void RtpVideoSender::OnBitrateAllocationUpdated(
