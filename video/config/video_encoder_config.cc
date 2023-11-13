@@ -97,6 +97,10 @@ void VideoEncoderConfig::EncoderSpecificSettings::FillEncoderSpecificSettings(
     FillVideoCodecVp9(codec->VP9());
   } else if (codec->codecType == kVideoCodecAV1) {
     FillVideoCodecAv1(codec->AV1());
+#ifdef RTC_ENABLE_H265
+  } else if (codec->codecType == kVideoCodecH265) {
+    FillVideoCodecH265(codec->H265());
+#endif
   } else {
     RTC_DCHECK_NOTREACHED()
         << "Encoder specifics set/used for unknown codec type.";
