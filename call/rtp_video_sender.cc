@@ -323,7 +323,6 @@ bool TransportSeqNumExtensionConfigured(const RtpConfig& config) {
 // e.g. it is the same as a key frame when spatial scalability is not used.
 // When spatial scalability is used, then it is true for layer frames of
 // a key frame without inter-layer dependencies.
-#ifndef RTC_ENABLE_H265
 bool IsFirstFrameOfACodedVideoSequence(
     const EncodedImage& encoded_image,
     const CodecSpecificInfo* codec_specific_info) {
@@ -351,7 +350,7 @@ bool IsFirstFrameOfACodedVideoSequence(
     }
   }
 
-  // Without dependencies described in generic format do an educated guess.
+  // Without depenedencies described in generic format do an educated guess.
   // It might be wrong for VP9 with spatial layer 0 skipped or higher spatial
   // layer not depending on the spatial layer 0. This corner case is unimportant
   // for current usage of this helper function.
@@ -359,7 +358,7 @@ bool IsFirstFrameOfACodedVideoSequence(
   // Use <= to accept both 0 (i.e. the first) and nullopt (i.e. the only).
   return encoded_image.SpatialIndex() <= 0;
 }
-#endif
+
 }  // namespace
 
 RtpVideoSender::RtpVideoSender(
@@ -566,78 +565,6 @@ bool RtpVideoSender::IsActiveLocked() {
 EncodedImageCallback::Result RtpVideoSender::OnEncodedImage(
     const EncodedImage& encoded_image,
     const CodecSpecificInfo* codec_specific_info) {
-#ifdef RTC_ENABLE_H265
-  fec_controller_->UpdateWithEncodedData(encoded_image.size(),
-                                         encoded_image._frameType);
-  MutexLock lock(&mutex_);
-  RTC_DCHECK(!rtp_streams_.empty());
-  if (!active_)
-    return Result(Result::ERROR_SEND_FAILED);
-
-  shared_frame_id_++;
-  size_t stream_index = 0;
-  if (codec_specific_info &&
-      (codec_specific_info->codecType == kVideoCodecVP8 ||
-       codec_specific_info->codecType == kVideoCodecH264 ||
-       codec_specific_info->codecType == kVideoCodecGeneric)) {
-    // Map spatial index to simulcast.
-    stream_index = encoded_image.SpatialIndex().value_or(0);
-  }
-  RTC_DCHECK_LT(stream_index, rtp_streams_.size());
-
-  uint32_t rtp_timestamp =
-      encoded_image.RtpTimestamp() + rtp_streams_[stream_index].rtp_rtcp->StartTimestamp();
-
-  // RTCPSender has its own copy of the timestamp offset, added in
-  // RTCPSender::BuildSR, hence we must not add the offset for this call.
-  // TODO(nisse): Delete RTCPSender::timestamp_offset_, and see if we can confine
-  // knowledge of the offset to a single place.
-  if (!rtp_streams_[stream_index].rtp_rtcp->OnSendingRtpFrame(
-          encoded_image.RtpTimestamp(), encoded_image.capture_time_ms_,
-          rtp_config_.payload_type,
-          encoded_image._frameType == VideoFrameType::kVideoFrameKey)) {
-    // The payload router could be active but this module isn't sending.
-    return Result(Result::ERROR_SEND_FAILED);
-  }
-
-  TimeDelta expected_retransmission_time = TimeDelta::PlusInfinity();
-  if (encoded_image.RetransmissionAllowed()) {
-    expected_retransmission_time =
-        rtp_streams_[stream_index].rtp_rtcp->ExpectedRetransmissionTime();
-  }
-
-  if (encoded_image._frameType == VideoFrameType::kVideoFrameKey) {
-    // If the encoder adapter produces FrameDependencyStructure, pass it so that
-    // dependency descriptor RTP header extension can be used.
-    // If not supported, disable using the dependency descriptor by passing nullptr.
-    rtp_streams_[stream_index].sender_video->SetVideoStructure(
-        (codec_specific_info && codec_specific_info->template_structure)
-            ? &*codec_specific_info->template_structure
-            : nullptr);
-  }
-
-  bool send_result = rtp_streams_[stream_index].sender_video->SendEncodedImage(
-      rtp_config_.payload_type, codec_type_, rtp_timestamp, encoded_image,
-          params_[stream_index].GetRtpVideoHeader(
-              encoded_image, codec_specific_info, shared_frame_id_),
-          expected_retransmission_time);
-  if (frame_count_observer_) {
-    FrameCounts& counts = frame_counts_[stream_index];
-    if (encoded_image._frameType == VideoFrameType::kVideoFrameKey) {
-      ++counts.key_frames;
-    } else if (encoded_image._frameType == VideoFrameType::kVideoFrameDelta) {
-      ++counts.delta_frames;
-    } else {
-      RTC_DCHECK(encoded_image._frameType == VideoFrameType::kEmptyFrame);
-    }
-    frame_count_observer_->FrameCountUpdated(counts,
-                                             rtp_config_.ssrcs[stream_index]);
-  }
-  if (!send_result)
-    return Result(Result::ERROR_SEND_FAILED);
-
-  return Result(Result::OK, rtp_timestamp);
-#else
   fec_controller_->UpdateWithEncodedData(encoded_image.size(),
                                          encoded_image._frameType);
   MutexLock lock(&mutex_);
@@ -653,9 +580,9 @@ EncodedImageCallback::Result RtpVideoSender::OnEncodedImage(
       encoded_image.RtpTimestamp() +
       rtp_streams_[simulcast_index].rtp_rtcp->StartTimestamp();
 
-  // RTCPSender has its own copy of the timestamp offset, added in
-  // RTCPSender::BuildSR, hence we must not add the offset for this call.
-  // TODO(nisse): Delete RTCPSender::timestamp_offset_, and see if we can confine
+  // RTCPSender has it's own copy of the timestamp offset, added in
+  // RTCPSender::BuildSR, hence we must not add the in the offset for this call.
+  // TODO(nisse): Delete RTCPSender:timestamp_offset_, and see if we can confine
   // knowledge of the offset to a single place.
   if (!rtp_streams_[simulcast_index].rtp_rtcp->OnSendingRtpFrame(
           encoded_image.RtpTimestamp(), encoded_image.capture_time_ms_,
@@ -714,7 +641,6 @@ EncodedImageCallback::Result RtpVideoSender::OnEncodedImage(
     return Result(Result::ERROR_SEND_FAILED);
 
   return Result(Result::OK, rtp_timestamp);
-#endif
 }
 
 void RtpVideoSender::OnBitrateAllocationUpdated(
