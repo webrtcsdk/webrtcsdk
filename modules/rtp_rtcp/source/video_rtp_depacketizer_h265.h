@@ -22,31 +22,6 @@ class VideoRtpDepacketizerH265 : public VideoRtpDepacketizer {
 
   absl::optional<ParsedRtpPayload> Parse(
       rtc::CopyOnWriteBuffer rtp_payload) override;
-
-private:
-  struct ParsedPayload {
-    RTPVideoHeader& video_header() { return video; }
-    const RTPVideoHeader& video_header() const { return video; }
-
-    RTPVideoHeader video;
-
-    const uint8_t* payload;
-    size_t payload_length;
-  };
-
-  bool Parse(ParsedPayload* parsed_payload,
-             const uint8_t* payload_data,
-             size_t payload_data_length);
-
-  bool ParseFuNalu(ParsedPayload* parsed_payload,
-                   const uint8_t* payload_data);
-  bool ProcessApOrSingleNalu(ParsedPayload* parsed_payload,
-                             const uint8_t* payload_data);
-
-  size_t offset_;
-  size_t length_;
-  std::unique_ptr<rtc::Buffer> modified_buffer_;
-
 };
 }  // namespace webrtc
 
