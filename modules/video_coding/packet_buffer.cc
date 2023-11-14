@@ -283,7 +283,7 @@ std::vector<std::unique_ptr<PacketBuffer::Packet>> PacketBuffer::FindFrames(
 
       bool is_h265 = false;
 #ifdef RTC_ENABLE_H265
-      is_h265 = buffer_[start_index]->codec() == kVideoCodecH265;
+      is_h265 = (buffer_[start_index]->codec() == kVideoCodecH265) && !is_generic;
       bool has_h265_sps = false;
       bool has_h265_pps = false;
       bool has_h265_idr = false;

@@ -76,20 +76,17 @@ enum HevcFuDefs { kHevcSBit = 0x80, kHevcEBit = 0x40, kHevcFuTypeBit = 0x3F };
 
 }  // namespace
 
-RtpPacketizerH265::RtpPacketizerH265(
-    rtc::ArrayView<const uint8_t> payload,
-    PayloadSizeLimits limits,
-    H265PacketizationMode packetization_mode,
-    bool end_of_frame)
-    : limits_(limits),
-      num_packets_left_(0),
-      end_of_frame_(end_of_frame) {
+RtpPacketizerH265::RtpPacketizerH265(rtc::ArrayView<const uint8_t> payload,
+                                     PayloadSizeLimits limits,
+                                     H265PacketizationMode packetization_mode,
+                                     bool end_of_frame)
+    : limits_(limits), num_packets_left_(0), end_of_frame_(end_of_frame) {
   // Guard against uninitialized memory in packetization_mode.
   RTC_CHECK(packetization_mode == H265PacketizationMode::NonInterleaved ||
             packetization_mode == H265PacketizationMode::SingleNalUnit);
 
   for (const auto& nalu :
-       H264::FindNaluIndices(payload.data(), payload.size())) {
+       H265::FindNaluIndices(payload.data(), payload.size())) {
     input_fragments_.push_back(
         payload.subview(nalu.payload_start_offset, nalu.payload_size));
   }

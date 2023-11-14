@@ -21,7 +21,6 @@ std::vector<NaluIndex> FindNaluIndices(const uint8_t* buffer, size_t buffer_size
   std::vector<NaluIndex> sequences;
 
   if (buffer == nullptr || buffer_size < kNaluShortStartSequenceSize) {
-    // Kiểm tra buffer có hợp lệ và có đủ kích thước.
     return sequences;
   }
 
