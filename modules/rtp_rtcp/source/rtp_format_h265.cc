@@ -86,7 +86,7 @@ RtpPacketizerH265::RtpPacketizerH265(rtc::ArrayView<const uint8_t> payload,
             packetization_mode == H265PacketizationMode::SingleNalUnit);
 
   for (const auto& nalu :
-       H265::FindNaluIndices(payload.data(), payload.size())) {
+       H264::FindNaluIndices(payload.data(), payload.size())) {
     input_fragments_.push_back(
         payload.subview(nalu.payload_start_offset, nalu.payload_size));
   }
