@@ -2,11 +2,12 @@
  *  Intel License
  */
 
+#include "modules/rtp_rtcp/source/rtp_format_h265.h"
+
 #include <string.h>
 
 #include "absl/types/optional.h"
 #include "absl/types/variant.h"
-
 #include "common_video/h264/h264_common.h"
 #include "common_video/h265/h265_common.h"
 #include "common_video/h265/h265_pps_parser.h"
@@ -14,7 +15,6 @@
 #include "common_video/h265/h265_vps_parser.h"
 #include "modules/include/module_common_types.h"
 #include "modules/rtp_rtcp/source/byte_io.h"
-#include "modules/rtp_rtcp/source/rtp_format_h265.h"
 #include "modules/rtp_rtcp/source/rtp_packet_to_send.h"
 #include "rtc_base/logging.h"
 
@@ -85,10 +85,13 @@ RtpPacketizerH265::RtpPacketizerH265(rtc::ArrayView<const uint8_t> payload,
   RTC_CHECK(packetization_mode == H265PacketizationMode::NonInterleaved ||
             packetization_mode == H265PacketizationMode::SingleNalUnit);
 
-  for (const auto& nalu :
-       H264::FindNaluIndices(payload.data(), payload.size())) {
-    input_fragments_.push_back(
-        payload.subview(nalu.payload_start_offset, nalu.payload_size));
+  if (!payload.empty()) {
+    std::vector<H264::NaluIndex> indices =
+        H264::FindNaluIndices(payload.data(), payload.size());
+    for (const auto& nalu : indices) {
+      input_fragments_.push_back(
+          payload.subview(nalu.payload_start_offset, nalu.payload_size));
+    }
   }
 
   if (!GeneratePackets(packetization_mode)) {
@@ -183,7 +186,6 @@ bool RtpPacketizerH265::PacketizeFu(size_t fragment_index) {
   RTC_CHECK_EQ(0, payload_left);
   return true;
 }
-
 
 bool RtpPacketizerH265::PacketizeSingleNalu(size_t fragment_index) {
   // Add a single NALU to the queue, no aggregation.

@@ -24,7 +24,7 @@ std::vector<NaluIndex> FindNaluIndices(const uint8_t* buffer,
   // skip ahead to the next 3-byte sequence. 0s and 1s are relatively rare, so
   // this will skip the majority of reads/checks.
   std::vector<NaluIndex> sequences;
-  if (buffer_size < kNaluShortStartSequenceSize)
+  if (buffer == nullptr || buffer_size < kNaluShortStartSequenceSize)
     return sequences;
 
   static_assert(kNaluShortStartSequenceSize >= 2,
