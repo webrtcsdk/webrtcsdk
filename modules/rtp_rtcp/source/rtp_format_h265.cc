@@ -78,9 +78,8 @@ enum HevcFuDefs { kHevcSBit = 0x80, kHevcEBit = 0x40, kHevcFuTypeBit = 0x3F };
 
 RtpPacketizerH265::RtpPacketizerH265(rtc::ArrayView<const uint8_t> payload,
                                      PayloadSizeLimits limits,
-                                     H265PacketizationMode packetization_mode,
-                                     bool end_of_frame)
-    : limits_(limits), num_packets_left_(0), end_of_frame_(end_of_frame) {
+                                     H265PacketizationMode packetization_mode)
+    : limits_(limits), num_packets_left_(0) {
   // Guard against uninitialized memory in packetization_mode.
   RTC_CHECK(packetization_mode == H265PacketizationMode::NonInterleaved ||
             packetization_mode == H265PacketizationMode::SingleNalUnit);
@@ -287,7 +286,7 @@ bool RtpPacketizerH265::NextPacket(RtpPacketToSend* rtp_packet) {
   } else {
     NextFragmentPacket(rtp_packet);
   }
-  rtp_packet->SetMarker(packets_.empty() && end_of_frame_);
+  rtp_packet->SetMarker(packets_.empty());
   --num_packets_left_;
   return true;
 }
