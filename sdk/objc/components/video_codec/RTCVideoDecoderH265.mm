@@ -101,7 +101,7 @@ void h265DecompressionOutputCallback(void* decoder,
   }
 
   rtc::ScopedCFTypeRef<CMVideoFormatDescriptionRef> inputFormat =
-      rtc::ScopedCF(webrtc::CreateVideoFormatDescription(
+      rtc::ScopedCF(webrtc::CreateH265VideoFormatDescription(
           (uint8_t*)inputImage.buffer.bytes, inputImage.buffer.length));
   if (inputFormat) {
     CMVideoDimensions dimensions =
@@ -128,10 +128,9 @@ void h265DecompressionOutputCallback(void* decoder,
     return WEBRTC_VIDEO_CODEC_ERROR;
   }
   CMSampleBufferRef sampleBuffer = nullptr;
-  if (!webrtc::H265AnnexBBufferToCMSampleBuffer((uint8_t*)inputImage.buffer.bytes,
-                                                inputImage.buffer.length,
-                                                _videoFormat,
-                                                &sampleBuffer)) {
+  if (!webrtc::H265AnnexBBufferToCMSampleBuffer(
+          (uint8_t*)inputImage.buffer.bytes, inputImage.buffer.length,
+          _videoFormat, &sampleBuffer)) {
     return WEBRTC_VIDEO_CODEC_ERROR;
   }
   RTC_DCHECK(sampleBuffer);
@@ -248,7 +247,9 @@ void h265DecompressionOutputCallback(void* decoder,
 - (void)destroyDecompressionSession {
   if (_decompressionSession) {
 #if defined(WEBRTC_IOS)
-    VTDecompressionSessionWaitForAsynchronousFrames(_decompressionSession);
+    if ([UIDevice isIOS11OrLater]) {
+      VTDecompressionSessionWaitForAsynchronousFrames(_decompressionSession);
+    }
 #endif
     VTDecompressionSessionInvalidate(_decompressionSession);
     CFRelease(_decompressionSession);

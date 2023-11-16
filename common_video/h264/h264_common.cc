@@ -18,13 +18,13 @@ namespace H264 {
 const uint8_t kNaluTypeMask = 0x1F;
 
 std::vector<NaluIndex> FindNaluIndices(const uint8_t* buffer,
-                                       size_t buffer_size) noexcept {
+                                       size_t buffer_size) {
   // This is sorta like Boyer-Moore, but with only the first optimization step:
   // given a 3-byte sequence we're looking at, if the 3rd byte isn't 1 or 0,
   // skip ahead to the next 3-byte sequence. 0s and 1s are relatively rare, so
   // this will skip the majority of reads/checks.
   std::vector<NaluIndex> sequences;
-  if (buffer == nullptr || buffer_size < kNaluShortStartSequenceSize)
+  if (buffer_size < kNaluShortStartSequenceSize)
     return sequences;
 
   static_assert(kNaluShortStartSequenceSize >= 2,
