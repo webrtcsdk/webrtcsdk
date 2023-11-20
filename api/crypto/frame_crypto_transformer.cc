@@ -89,7 +89,9 @@ inline bool FrameIsH264(webrtc::TransformableFrameInterface* frame,
       auto videoFrame =
           static_cast<webrtc::TransformableVideoFrameInterface*>(frame);
       return videoFrame->header().codec ==
-             webrtc::VideoCodecType::kVideoCodecH264;
+             webrtc::VideoCodecType::kVideoCodecH264 ||
+             videoFrame->header().codec ==
+             webrtc::VideoCodecType::kVideoCodecH265;
     }
     default:
       return false;
@@ -137,10 +139,12 @@ uint8_t get_unencrypted_bytes(webrtc::TransformableFrameInterface* frame,
           webrtc::VideoCodecType::kVideoCodecAV1) {
         unencrypted_bytes = 0;
       } else if (videoFrame->header().codec ==
-                 webrtc::VideoCodecType::kVideoCodecVP8) {
+                 webrtc::VideoCodecType::kVideoCodecVP8 || videoFrame->header().codec ==
+                 webrtc::VideoCodecType::kVideoCodecVP9) {
         unencrypted_bytes = videoFrame->IsKeyFrame() ? 10 : 3;
       } else if (videoFrame->header().codec ==
-                 webrtc::VideoCodecType::kVideoCodecH264) {
+                 webrtc::VideoCodecType::kVideoCodecH264 || videoFrame->header().codec ==
+                 webrtc::VideoCodecType::kVideoCodecH265) {
         rtc::ArrayView<const uint8_t> date_in = frame->GetData();
         std::vector<webrtc::H264::NaluIndex> nalu_indices =
             webrtc::H264::FindNaluIndices(date_in.data(), date_in.size());
