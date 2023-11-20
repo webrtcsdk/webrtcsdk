@@ -734,6 +734,16 @@ if (is_ios || is_mac) {
         "objc/components/video_codec/RTCH264ProfileLevelId.h",
         "objc/components/video_codec/RTCH264ProfileLevelId.mm",
       ]
+
+      if (rtc_use_h265) {
+        sources += [
+          "objc/components/video_codec/RTCCodecSpecificInfoH265.h",
+          "objc/components/video_codec/RTCCodecSpecificInfoH265.mm",
+          "objc/components/video_codec/RTCH265ProfileLevelId.h",
+          "objc/components/video_codec/RTCH265ProfileLevelId.mm",
+        ]
+      }
+      
       if (is_ios) {
         sources += [
           "objc/components/video_codec/UIDevice+H264Profile.h",
@@ -1611,6 +1621,16 @@ if (is_ios || is_mac) {
           ]
         }
 
+        if (rtc_use_h265) {
+          sources += [
+            "objc/components/video_codec/RTCH265ProfileLevelId.h",
+            "objc/components/video_codec/RTCVideoDecoderFactoryH265.h",
+            "objc/components/video_codec/RTCVideoDecoderH265.h",
+            "objc/components/video_codec/RTCVideoEncoderFactoryH265.h",
+            "objc/components/video_codec/RTCVideoEncoderH265.h",
+          ]
+        }
+
         deps = [
           ":base_objc",
           ":default_codec_factory_objc",
@@ -1822,13 +1842,29 @@ if (is_ios || is_mac) {
         "objc/components/video_codec/RTCVideoEncoderH264.mm",
       ]
 
+      defines = []
+
+      if (rtc_use_h265) {
+        sources += [
+          "objc/components/video_codec/RTCVideoDecoderFactoryH265.h",
+          "objc/components/video_codec/RTCVideoDecoderFactoryH265.m",
+          "objc/components/video_codec/RTCVideoDecoderH265.h",
+          "objc/components/video_codec/RTCVideoDecoderH265.mm",
+          "objc/components/video_codec/RTCVideoEncoderFactoryH265.h",
+          "objc/components/video_codec/RTCVideoEncoderFactoryH265.m",
+          "objc/components/video_codec/RTCVideoEncoderH265.h",
+          "objc/components/video_codec/RTCVideoEncoderH265.mm",
+        ]
+        defines += ["WEBRTC_USE_H265"]
+      }
+
       configs += [
         "..:common_objc",
         ":used_from_extension",
       ]
 
       if (is_ios && rtc_apprtcmobile_broadcast_extension) {
-        defines = [ "RTC_APPRTCMOBILE_BROADCAST_EXTENSION" ]
+        defines += [ "RTC_APPRTCMOBILE_BROADCAST_EXTENSION" ]
       }
 
       deps = [

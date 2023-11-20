@@ -20,8 +20,8 @@
 #include "rtc_base/checks.h"
 #include "rnnoise/include/rnnoise.h"
 
-#define FRAME_SIZE 1024
-#define SLIDING_WINDOW_SIZE 128
+#define FRAME_SIZE 480
+#define SLIDING_WINDOW_SIZE 120
 
 namespace webrtc {
 
