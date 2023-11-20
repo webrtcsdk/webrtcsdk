@@ -21,8 +21,8 @@ enum VideoCodecType {
   kVideoCodecVP9,
   kVideoCodecAV1,
   kVideoCodecH264,
-  kVideoCodecMultiplex,
   kVideoCodecH265,
+  kVideoCodecMultiplex,
 };
 
 }  // namespace webrtc

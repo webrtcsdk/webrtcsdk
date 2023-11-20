@@ -97,6 +97,10 @@ void VideoEncoderConfig::EncoderSpecificSettings::FillEncoderSpecificSettings(
     FillVideoCodecVp9(codec->VP9());
   } else if (codec->codecType == kVideoCodecAV1) {
     FillVideoCodecAv1(codec->AV1());
+#ifdef RTC_ENABLE_H265
+  } else if (codec->codecType == kVideoCodecH265) {
+    FillVideoCodecH265(codec->H265());
+#endif
   } else {
     RTC_DCHECK_NOTREACHED()
         << "Encoder specifics set/used for unknown codec type.";
@@ -116,6 +120,20 @@ void VideoEncoderConfig::EncoderSpecificSettings::FillVideoCodecVp9(
 void VideoEncoderConfig::EncoderSpecificSettings::FillVideoCodecAv1(
     VideoCodecAV1* av1_settings) const {
   RTC_DCHECK_NOTREACHED();
+}
+
+void VideoEncoderConfig::EncoderSpecificSettings::FillVideoCodecH265(
+    VideoCodecH265* h265_settings) const {
+  RTC_DCHECK_NOTREACHED();
+}
+
+VideoEncoderConfig::H265EncoderSpecificSettings::H265EncoderSpecificSettings(
+    const VideoCodecH265& specifics)
+    : specifics_(specifics) {}
+
+void VideoEncoderConfig::H265EncoderSpecificSettings::FillVideoCodecH265(
+    VideoCodecH265* h265_settings) const {
+  *h265_settings = specifics_;
 }
 
 VideoEncoderConfig::Vp8EncoderSpecificSettings::Vp8EncoderSpecificSettings(
