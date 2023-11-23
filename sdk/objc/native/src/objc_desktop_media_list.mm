@@ -235,10 +235,10 @@ void MediaSource::SaveCaptureResult(webrtc::DesktopCapturer::Result result,
   NSData *imageData;
   NSBitmapImageRep *newRep = [[NSBitmapImageRep alloc] initWithCGImage:cgImage];
   [newRep setSize:NSSizeToCGSize(outputSize.size)];
-  imageData = [newRep representationUsingType:NSJPEGFileType
-                                   properties:@{
-                                     NSImageCompressionFactor : @1.0f
-                                   }];
+  imageData = [newRep representationUsingType:NSBitmapImageFileTypeJPEG properties:@{
+    NSImageCompressionFactor : @1.0f
+  }];
+
 
   thumbnail_.resize(imageData.length);
   const void *_Nullable rawData = [imageData bytes];
