@@ -750,7 +750,8 @@ NSUInteger GetMaxSampleRate(const webrtc::H264ProfileLevelId &profile_level_id) 
   }
   // Set maximum QP for screen sharing mode, range must be within 1 to 51
   // https://developer.apple.com/documentation/videotoolbox/kvtcompressionpropertykey_maxallowedframeqp
-  if (@available(iOS 15.0, *)) {
+#if defined(WEBRTC_IOS)
+  if (@available(iOS 15.0, macOS 12.0, *)) {
     // Only enable for screen sharing and let VideoToolbox do the optimizing as much as possible.
     if (_codecMode == RTCVideoCodecModeScreensharing) {
       RTC_LOG(LS_INFO) << "Configuring VideoToolbox to use maxQP: " << kHighH264QpThreshold
@@ -759,6 +760,7 @@ NSUInteger GetMaxSampleRate(const webrtc::H264ProfileLevelId &profile_level_id) 
           _compressionSession, kVTCompressionPropertyKey_MaxAllowedFrameQP, kHighH264QpThreshold);
     }
   }
+#endif
   SetVTSessionProperty(
       _compressionSession,
       kVTCompressionPropertyKey_ProfileLevel,
