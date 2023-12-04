@@ -403,6 +403,10 @@ void NoiseSuppressor::Process(AudioBuffer* audio) {
       // size_t window_end = std::min(window_start + FRAME_SIZE, num_frames * FRAME_SIZE);
       size_t frame_idx = window_start / FRAME_SIZE;
 
+      if (frame_idx >= num_frames) {
+        break;
+      }
+
       // Copy the current frame to the input buffer for RNNoise
       for (size_t i = 0; i < FRAME_SIZE; ++i) {
         size_t sample_idx = frame_idx * FRAME_SIZE + i;
