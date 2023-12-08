@@ -51,6 +51,7 @@
 #include "rtc_base/thread_annotations.h"
 #include "rtc_base/trace_event.h"
 #include "system_wrappers/include/metrics.h"
+#include "system_wrappers/include/field_trial.h"
 #include "video/adaptation/video_stream_encoder_resource_manager.h"
 #include "video/alignment_adjuster.h"
 #include "video/config/encoder_stream_factory.h"
@@ -148,8 +149,10 @@ bool RequiresEncoderReset(const VideoCodec& prev_send_codec,
       }
       break;
     case kVideoCodecH265:
-      // TODO(bugs.webrtc.org/13485): Implement new send codec H265
-      [[fallthrough]];
+      if (new_send_codec.H265() != prev_send_codec.H265()) {
+        return true;
+      }
+      break;
     default:
       break;
   }
@@ -1495,7 +1498,10 @@ void VideoStreamEncoder::OnFrame(Timestamp post_time,
     incoming_frame.set_timestamp_us(post_time.us());
 
   // Capture time may come from clock with an offset and drift from clock_.
+  // Jianlin: in case of slice-based encoding, the capturer will not set the
+  // ntp_time_ms and render_tim_ms.
   int64_t capture_ntp_time_ms;
+  // TODO: Check latency mode.
   if (video_frame.ntp_time_ms() > 0) {
     capture_ntp_time_ms = video_frame.ntp_time_ms();
   } else if (video_frame.render_time_ms() != 0) {
@@ -1516,7 +1522,12 @@ void VideoStreamEncoder::OnFrame(Timestamp post_time,
       video_frame.capture_time_identifier());
 
   if (incoming_frame.ntp_time_ms() <= last_captured_timestamp_) {
+    // TODO: Check latency mode.
     // We don't allow the same capture time for two frames, drop this one.
+    // Jianlin(implementation deviation: For push-mode, dropping frame due
+    // to same timestamp is not allowed.
+    // So make sure dropping is enabled for pull mode while disabled for
+    // push mode.
     RTC_LOG(LS_WARNING) << "Same/old NTP timestamp ("
                         << incoming_frame.ntp_time_ms()
                         << " <= " << last_captured_timestamp_
@@ -1584,6 +1595,9 @@ bool VideoStreamEncoder::EncoderPaused() const {
   // pacer queue has grown too large in buffered mode.
   // If the pacer queue has grown too large or the network is down,
   // `last_encoder_rate_settings_->encoder_target` will be 0.
+  // For low latency mode we always disable encoder pausing.
+  if (field_trial::IsEnabled("OWT-LowLatencyMode"))
+    return false;
   return !last_encoder_rate_settings_ ||
          last_encoder_rate_settings_->encoder_target == DataRate::Zero();
 }
@@ -1844,7 +1858,9 @@ void VideoStreamEncoder::MaybeEncodeVideoFrame(const VideoFrame& video_frame,
       !force_disable_frame_dropper_ &&
       !encoder_info_.has_trusted_rate_controller;
   frame_dropper_.Enable(frame_dropping_enabled);
-  if (frame_dropping_enabled && frame_dropper_.DropFrame()) {
+  // For low latency mode we don't drop frame
+  if (frame_dropping_enabled && frame_dropper_.DropFrame() &&
+      !field_trial::IsEnabled("OWT-LowLatencyMode")) {
     RTC_LOG(LS_VERBOSE)
         << "Drop Frame: "
            "target bitrate "
@@ -2010,9 +2026,15 @@ void VideoStreamEncoder::EncodeVideoFrame(const VideoFrame& video_frame,
   was_encode_called_since_last_initialization_ = true;
 
   if (encode_status < 0) {
-    RTC_LOG(LS_ERROR) << "Encoder failed, failing encoder format: "
-                      << encoder_config_.video_format.ToString();
-    RequestEncoderSwitch();
+    if (encode_status == WEBRTC_VIDEO_CODEC_ENCODER_FAILURE) {
+      RTC_LOG(LS_ERROR) << "Encoder failed, failing encoder format: "
+                        << encoder_config_.video_format.ToString();
+      RequestEncoderSwitch();
+    } else {
+      RTC_LOG(LS_ERROR) << "Failed to encode frame. Error code: "
+                        << encode_status;
+    }
+
     return;
   }
 

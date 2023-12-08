@@ -56,12 +56,14 @@ class AudioDeviceModule : public webrtc::RefCountInterface {
   // Creates a default ADM for usage in production code.
   static rtc::scoped_refptr<AudioDeviceModule> Create(
       AudioLayer audio_layer,
-      TaskQueueFactory* task_queue_factory);
+      TaskQueueFactory* task_queue_factory,
+      bool bypass_voice_processing = false);
   // Creates an ADM with support for extra test methods. Don't use this factory
   // in production code.
   static rtc::scoped_refptr<AudioDeviceModuleForTest> CreateForTest(
       AudioLayer audio_layer,
-      TaskQueueFactory* task_queue_factory);
+      TaskQueueFactory* task_queue_factory,
+      bool bypass_voice_processing = false);
 
   // Retrieve the currently utilized audio layer
   virtual int32_t ActiveAudioLayer(AudioLayer* audioLayer) const = 0;
@@ -170,6 +172,10 @@ class AudioDeviceModule : public webrtc::RefCountInterface {
   virtual int GetPlayoutAudioParameters(AudioParameters* params) const = 0;
   virtual int GetRecordAudioParameters(AudioParameters* params) const = 0;
 #endif  // WEBRTC_IOS
+
+  virtual int32_t SetAudioDeviceSink(AudioDeviceSink* sink) const { return -1; }
+  virtual int32_t GetPlayoutDevice() const { return -1; }
+  virtual int32_t GetRecordingDevice() const { return -1; }
 
  protected:
   ~AudioDeviceModule() override {}
