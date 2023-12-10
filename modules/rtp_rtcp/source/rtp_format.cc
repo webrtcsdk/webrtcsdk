@@ -24,9 +24,6 @@
 #include "modules/video_coding/codecs/vp8/include/vp8_globals.h"
 #include "modules/video_coding/codecs/vp9/include/vp9_globals.h"
 #include "rtc_base/checks.h"
-#ifdef RTC_ENABLE_H265
-#include "modules/rtp_rtcp/source/rtp_packetizer_h265.h"
-#endif
 
 namespace webrtc {
 
