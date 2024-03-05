@@ -9,16 +9,23 @@
  */
 
 #import <Foundation/Foundation.h>
-
 #import "RTCMacros.h"
 #import "RTCMediaSource.h"
 #import "RTCVideoCapturer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
+@protocol RTCVideoSourceDelegate <NSObject>
+
+- (void)videoSource:(RTC_OBJC_TYPE(RTCVideoSource) *)videoSource didCaptureFrame:(RTC_OBJC_TYPE(RTCVideoFrame) *)frame;
+
+@end
+
 RTC_OBJC_EXPORT
 
 @interface RTC_OBJC_TYPE (RTCVideoSource) : RTC_OBJC_TYPE(RTCMediaSource) <RTC_OBJC_TYPE(RTCVideoCapturerDelegate)>
+
+@property (nonatomic, weak) id<RTCVideoSourceDelegate> delegate;
 
 - (instancetype)init NS_UNAVAILABLE;
 
