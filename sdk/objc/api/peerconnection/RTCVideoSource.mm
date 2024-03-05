@@ -21,6 +21,9 @@ static webrtc::ObjCVideoTrackSource *getObjCVideoSource(
   return static_cast<webrtc::ObjCVideoTrackSource *>(proxy_source->internal());
 }
 
+// TODO(magjed): Refactor this class and target ObjCVideoTrackSource only once
+// RTCAVFoundationVideoSource is gone. See http://crbug/webrtc/7177 for more
+// info.
 @implementation RTC_OBJC_TYPE (RTCVideoSource) {
   rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> _nativeVideoSource;
 }
@@ -74,13 +77,18 @@ static webrtc::ObjCVideoTrackSource *getObjCVideoSource(
 - (void)capturer:(RTC_OBJC_TYPE(RTCVideoCapturer) *)capturer
     didCaptureVideoFrame:(RTC_OBJC_TYPE(RTCVideoFrame) *)frame {
   getObjCVideoSource(_nativeVideoSource)->OnCapturedFrame(frame);
-  if ([self.delegate respondsToSelector:@selector(videoSource:didCaptureFrame:)]) {
-    [self.delegate videoSource:self didCaptureFrame:frame];
+
+  if (self.delegate) {
+    [self.delegate capturer:capturer didCaptureVideoFrame:frame];
   }
 }
 
 - (void)adaptOutputFormatToWidth:(int)width height:(int)height fps:(int)fps {
   getObjCVideoSource(_nativeVideoSource)->OnOutputFormatRequest(width, height, fps);
+}
+
+- (void)setDelegate:(nullable id<RTCVideoCapturerDelegate>)delegate {
+    self.delegate = delegate;
 }
 
 #pragma mark - Private
