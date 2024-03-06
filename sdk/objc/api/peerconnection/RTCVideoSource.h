@@ -36,6 +36,11 @@ RTC_OBJC_EXPORT
  */
 - (void)adaptOutputFormatToWidth:(int)width height:(int)height fps:(int)fps;
 
+/**
+ * Emit a video frame to the delegate.
+ */
+- (void)emitFrame:(RTC_OBJC_TYPE(RTCVideoFrame) *)frame;
+
 @end
 
 NS_ASSUME_NONNULL_END
