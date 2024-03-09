@@ -20,7 +20,11 @@ RTC_OBJC_EXPORT
 
 @interface RTC_OBJC_TYPE (RTCVideoSource) : RTC_OBJC_TYPE(RTCMediaSource) <RTC_OBJC_TYPE(RTCVideoCapturerDelegate)>
 
+@property(nonatomic, weak) id<RTC_OBJC_TYPE(RTCVideoCapturerDelegate)> delegate;
+
 - (instancetype)init NS_UNAVAILABLE;
+
+- (void)setDelegate:(nullable id<RTCVideoCapturerDelegate>)delegate;
 
 /**
  * Calling this function will cause frames to be scaled down to the
@@ -31,6 +35,11 @@ RTC_OBJC_EXPORT
  * matter if e.g. 1280x720 or 720x1280 is requested.
  */
 - (void)adaptOutputFormatToWidth:(int)width height:(int)height fps:(int)fps;
+
+/**
+ * Emit a video frame to the delegate.
+ */
+- (void)emitFrame:(RTC_OBJC_TYPE(RTCVideoFrame) *)frame;
 
 @end
 

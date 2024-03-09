@@ -28,6 +28,8 @@ static webrtc::ObjCVideoTrackSource *getObjCVideoSource(
   rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> _nativeVideoSource;
 }
 
+@synthesize delegate = _delegate;
+
 - (instancetype)initWithFactory:(RTC_OBJC_TYPE(RTCPeerConnectionFactory) *)factory
               nativeVideoSource:
                   (rtc::scoped_refptr<webrtc::VideoTrackSourceInterface>)nativeVideoSource {
@@ -76,11 +78,23 @@ static webrtc::ObjCVideoTrackSource *getObjCVideoSource(
 
 - (void)capturer:(RTC_OBJC_TYPE(RTCVideoCapturer) *)capturer
     didCaptureVideoFrame:(RTC_OBJC_TYPE(RTCVideoFrame) *)frame {
-  getObjCVideoSource(_nativeVideoSource)->OnCapturedFrame(frame);
+  if (_delegate) {
+    [_delegate capturer:capturer didCaptureVideoFrame:frame];
+  } else {
+    getObjCVideoSource(_nativeVideoSource)->OnCapturedFrame(frame);
+  }
 }
 
 - (void)adaptOutputFormatToWidth:(int)width height:(int)height fps:(int)fps {
   getObjCVideoSource(_nativeVideoSource)->OnOutputFormatRequest(width, height, fps);
+}
+
+- (void)emitFrame:(RTC_OBJC_TYPE(RTCVideoFrame) *)frame {
+    getObjCVideoSource(_nativeVideoSource)->OnCapturedFrame(frame);
+}
+
+- (void)setDelegate:(nullable id<RTCVideoCapturerDelegate>)delegate {
+    _delegate = delegate;
 }
 
 #pragma mark - Private
