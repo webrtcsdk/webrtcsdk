@@ -714,7 +714,7 @@ bool RtpVideoStreamReceiver2::OnReceivedPayloadData(
         rtcp_feedback_buffer_.SendBufferedRtcpFeedback();
         ABSL_FALLTHROUGH_INTENDED;
       case video_coding::H265VpsSpsPpsTracker::kDrop:
-        return;
+        return false;
       case video_coding::H265VpsSpsPpsTracker::kInsert:
         packet->video_payload = std::move(fixed.bitstream);
         break;
