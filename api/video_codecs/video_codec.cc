@@ -27,9 +27,9 @@ constexpr char kPayloadNameAv1[] = "AV1";
 // needed.
 constexpr char kPayloadNameAv1x[] = "AV1X";
 constexpr char kPayloadNameH264[] = "H264";
+constexpr char kPayloadNameH265[] = "H265";
 constexpr char kPayloadNameGeneric[] = "Generic";
 constexpr char kPayloadNameMultiplex[] = "Multiplex";
-constexpr char kPayloadNameH265[] = "H265";
 }  // namespace
 
 bool VideoCodecVP8::operator==(const VideoCodecVP8& other) const {
@@ -52,6 +52,15 @@ bool VideoCodecVP9::operator==(const VideoCodecVP9& other) const {
 bool VideoCodecH264::operator==(const VideoCodecH264& other) const {
   return (keyFrameInterval == other.keyFrameInterval &&
           numberOfTemporalLayers == other.numberOfTemporalLayers);
+}
+
+bool VideoCodecH265::operator==(const VideoCodecH265& other) const {
+  return (frameDroppingOn == other.frameDroppingOn &&
+          keyFrameInterval == other.keyFrameInterval &&
+          vpsLen == other.vpsLen && spsLen == other.spsLen &&
+          ppsLen == other.ppsLen &&
+          (spsLen == 0 || memcmp(spsData, other.spsData, spsLen) == 0) &&
+          (ppsLen == 0 || memcmp(ppsData, other.ppsData, ppsLen) == 0));
 }
 
 VideoCodec::VideoCodec()
@@ -143,6 +152,16 @@ const VideoCodecAV1& VideoCodec::AV1() const {
   return codec_specific_.AV1;
 }
 
+VideoCodecH265* VideoCodec::H265() {
+  RTC_DCHECK_EQ(codecType, kVideoCodecH265);
+  return &codec_specific_.H265;
+}
+
+const VideoCodecH265& VideoCodec::H265() const {
+  RTC_DCHECK_EQ(codecType, kVideoCodecH265);
+  return codec_specific_.H265;
+}
+
 const char* CodecTypeToPayloadString(VideoCodecType type) {
   switch (type) {
     case kVideoCodecVP8:
@@ -153,12 +172,13 @@ const char* CodecTypeToPayloadString(VideoCodecType type) {
       return kPayloadNameAv1;
     case kVideoCodecH264:
       return kPayloadNameH264;
+    case kVideoCodecH265:
+      return kPayloadNameH265;
     case kVideoCodecMultiplex:
       return kPayloadNameMultiplex;
     case kVideoCodecGeneric:
+	default:
       return kPayloadNameGeneric;
-    case kVideoCodecH265:
-      return kPayloadNameH265;
   }
   RTC_CHECK_NOTREACHED();
 }

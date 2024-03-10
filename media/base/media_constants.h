@@ -111,6 +111,9 @@ extern const char kRtcpFbCcmParamFir[];
 // Receiver reference time report
 // https://tools.ietf.org/html/rfc3611 section 4.4
 extern const char kRtcpFbParamRrtr[];
+// Reference picture selection indications
+// https://tools.ietf.org/html/rfc4585 section 6.3.3
+extern const char kRtcpFbNackParamRpsi[];
 // Google specific parameters
 extern const char kCodecParamMaxBitrate[];
 extern const char kCodecParamMinBitrate[];

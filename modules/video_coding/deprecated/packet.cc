@@ -25,8 +25,7 @@ VCMPacket::VCMPacket()
       timesNacked(-1),
       completeNALU(kNaluUnset),
       insertStartCode(false),
-      video_header() {
-}
+      video_header() {}
 
 VCMPacket::VCMPacket(const uint8_t* ptr,
                      size_t size,
@@ -43,8 +42,14 @@ VCMPacket::VCMPacket(const uint8_t* ptr,
       markerBit(rtp_header.markerBit),
       timesNacked(-1),
       completeNALU(kNaluIncomplete),
+#ifdef RTC_ENABLE_H265
+      insertStartCode((videoHeader.codec == kVideoCodecH264 ||
+                       videoHeader.codec == kVideoCodecH265) &&
+                      videoHeader.is_first_packet_in_frame),
+#else
       insertStartCode(videoHeader.codec == kVideoCodecH264 &&
                       videoHeader.is_first_packet_in_frame),
+#endif
       video_header(videoHeader),
       packet_info(rtp_header, receive_time) {
   if (is_first_packet_in_frame() && markerBit) {

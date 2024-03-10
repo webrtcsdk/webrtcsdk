@@ -12,19 +12,22 @@
 
 #import "RTCMacros.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @class RTC_OBJC_TYPE(RTCRtpCodecCapability);
-@class RTC_OBJC_TYPE(RTCRtpHeaderExtensionCapability);
+
+NS_ASSUME_NONNULL_BEGIN
 
 RTC_OBJC_EXPORT
 @interface RTC_OBJC_TYPE (RTCRtpCapabilities) : NSObject
 
-@property(nonatomic, copy) NSArray<RTC_OBJC_TYPE(RTCRtpCodecCapability) *> *codecs;
-@property(nonatomic, copy)
-    NSArray<RTC_OBJC_TYPE(RTCRtpHeaderExtensionCapability) *> *headerExtensions;
+- (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)init;
+@property(nonatomic, readonly) NSArray<RTC_OBJC_TYPE(RTCRtpCodecCapability) *> *codecs;
+
+// Not implemented.
+// std::vector<RtpHeaderExtensionCapability> header_extensions;
+
+// Not implemented.
+// std::vector<FecMechanism> fec;
 
 @end
 

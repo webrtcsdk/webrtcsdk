@@ -8,7 +8,7 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#import <AppKit/AppKit.h>
+#import "RTCMacros.h"
 
 #import "RTCVideoRenderer.h"
 

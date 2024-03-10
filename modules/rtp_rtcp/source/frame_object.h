@@ -49,7 +49,6 @@ class RtpFrameObject : public EncodedFrame {
   int64_t RenderTime() const override;
   bool delayed_by_retransmission() const override;
   const RTPVideoHeader& GetRtpVideoHeader() const;
-
   uint8_t* mutable_data() { return image_buffer_->data(); }
 
   const std::vector<uint32_t>& Csrcs() const { return csrcs_; }

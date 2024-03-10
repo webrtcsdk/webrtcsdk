@@ -24,6 +24,11 @@ NS_ASSUME_NONNULL_BEGIN
 @class RTC_OBJC_TYPE(RTCVideoSource);
 @class RTC_OBJC_TYPE(RTCVideoTrack);
 @class RTC_OBJC_TYPE(RTCPeerConnectionFactoryOptions);
+@class RTC_OBJC_TYPE(RTCAudioDeviceModule);
+@class RTC_OBJC_TYPE(RTCRtpCapabilities);
+
+typedef NS_ENUM(NSInteger, RTCRtpMediaType);
+
 @protocol RTC_OBJC_TYPE
 (RTCPeerConnectionDelegate);
 @protocol RTC_OBJC_TYPE
@@ -34,6 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 (RTCSSLCertificateVerifier);
 @protocol RTC_OBJC_TYPE
 (RTCAudioDevice);
+@protocol RTC_OBJC_TYPE
+(RTCAudioProcessingModule);
 
 RTC_OBJC_EXPORT
 @interface RTC_OBJC_TYPE (RTCPeerConnectionFactory) : NSObject
@@ -52,17 +59,19 @@ RTC_OBJC_EXPORT
             decoderFactory:(nullable id<RTC_OBJC_TYPE(RTCVideoDecoderFactory)>)decoderFactory
                audioDevice:(nullable id<RTC_OBJC_TYPE(RTCAudioDevice)>)audioDevice;
 
-/**
- * Valid kind values are kRTCMediaStreamTrackKindAudio and
- * kRTCMediaStreamTrackKindVideo.
- */
-- (RTC_OBJC_TYPE(RTCRtpCapabilities) *)rtpSenderCapabilitiesForKind:(NSString *)kind;
+/* Initialize object with bypass voice processing */
+- (instancetype)
+    initWithBypassVoiceProcessing:(BOOL)bypassVoiceProcessing
+                   encoderFactory:(nullable id<RTC_OBJC_TYPE(RTCVideoEncoderFactory)>)encoderFactory
+                   decoderFactory:(nullable id<RTC_OBJC_TYPE(RTCVideoDecoderFactory)>)decoderFactory
+            audioProcessingModule:
+                (nullable id<RTC_OBJC_TYPE(RTCAudioProcessingModule)>)audioProcessingModule;
 
-/**
- * Valid kind values are kRTCMediaStreamTrackKindAudio and
- * kRTCMediaStreamTrackKindVideo.
- */
-- (RTC_OBJC_TYPE(RTCRtpCapabilities) *)rtpReceiverCapabilitiesForKind:(NSString *)kind;
+@property(nonatomic, readonly) RTC_OBJC_TYPE(RTCAudioDeviceModule) *audioDeviceModule;
+
+- (RTC_OBJC_TYPE(RTCRtpCapabilities) *)rtpSenderCapabilitiesFor:(RTCRtpMediaType)mediaType;
+
+- (RTC_OBJC_TYPE(RTCRtpCapabilities) *)rtpReceiverCapabilitiesFor:(RTCRtpMediaType)mediaType;
 
 /** Initialize an RTCAudioSource with constraints. */
 - (RTC_OBJC_TYPE(RTCAudioSource) *)audioSourceWithConstraints:

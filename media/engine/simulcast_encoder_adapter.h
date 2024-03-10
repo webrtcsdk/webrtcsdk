@@ -44,6 +44,13 @@ class RTC_EXPORT SimulcastEncoderAdapter : public VideoEncoder {
   // TODO(bugs.webrtc.org/11000): Remove when downstream usage is gone.
   SimulcastEncoderAdapter(VideoEncoderFactory* primarty_factory,
                           const SdpVideoFormat& format);
+
+  // `primary_factory` produces the first-choice encoders to use.
+  // `fallback_factory`, if non-null, is used to create fallback encoder that
+  // will be used if InitEncode() fails for the primary encoder.
+  SimulcastEncoderAdapter(VideoEncoderFactory* primary_factory,
+                          VideoEncoderFactory* fallback_factory,
+                          const SdpVideoFormat& format);
   // `primary_factory` produces the first-choice encoders to use.
   // `fallback_factory`, if non-null, is used to create fallback encoder that
   // will be used if InitEncode() fails for the primary encoder.
